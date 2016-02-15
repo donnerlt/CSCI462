@@ -1,0 +1,527 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Kinect Web Basics</title>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="Kinect-1.8.0.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var streamImageWidth = 640;
+            var streamImageHeight = 480;
+            var streamImageResolution = streamImageWidth.toString() + "x" + streamImageHeight.toString();
+
+            var isSensorConnected = false;
+            var engagedUser = null;
+            var cursor = null;
+            var userViewerCanvasElement = null;
+            var backgroundRemovalCanvasElement = null;
+
+            // Log errors encountered during sensor configuration
+            function configError(statusText, errorData) {
+                console.log((errorData != null) ? JSON.stringify(errorData) : statusText);
+            }
+
+            // Determine if the specified object has any properties or not
+            function isEmptyObject(obj) {
+                if (obj == null) {
+                    return true;
+                }
+
+                var numProperties = 0;
+
+                for (var prop in obj) {
+                    if (obj.hasOwnProperty(prop)) {
+                        ++numProperties;
+                    }
+                }
+
+                return numProperties <= 0;
+            }
+
+            // Show or hide the cursor
+            function setCursorVisibility(isVisible) {
+                if (cursor == null) {
+                    return;
+                }
+
+                if (isVisible) {
+                    cursor.show();
+                } else {
+                    cursor.hide();
+                }
+            }
+
+            // Show or hide a canvas element
+            function setCanvasVisibility(canvasElement, isVisible) {
+                if (canvasElement == null) {
+                    return;
+                }
+
+                var canvasQuery = $(canvasElement);
+
+                if (isVisible) {
+                    if (!canvasQuery.hasClass("showing")) {
+                        // Clear canvas before showing it
+                        var canvasContext = canvasElement.getContext("2d");
+                        canvasContext.clearRect(0, 0, streamImageWidth, streamImageHeight);
+                    }
+
+                    canvasQuery.addClass("showing");
+                } else {
+                    canvasQuery.removeClass("showing");
+                }
+            }
+
+            var showPanelLabel = "Choose<br/>Background";
+            var hidePanelLabel = "Hide<br/>Panel";
+            function setChoosePanelVisibility(isVisible) {
+                var togglePanelElement = document.getElementById("togglePanelButton");
+                var spanQuery = $("span", togglePanelElement);
+
+                if (isVisible) {
+                    // If choose background panel is being shown, hide toggle button
+                    // border so top of button is aligned with other buttons
+                    $("#choosePanel").addClass("showing");
+                    spanQuery.html(hidePanelLabel);
+                } else {
+                    // If choose background panel is being hidden, show toggle button
+                    // border to provide contrast against picture
+                    $("#choosePanel").removeClass("showing");
+                    spanQuery.html(showPanelLabel);
+                }
+            }
+
+            function isChoosePanelVisible() {
+                return $("#choosePanel").hasClass("showing");
+            }
+
+            // property and function used to keep track of when the choose background control panel
+            // should be hidden after an inactivity period
+            var hidePanelTimeoutId = null;
+            function resetHidePanelTimeout() {
+                // First clear any previous timeout
+                if (hidePanelTimeoutId != null) {
+                    clearTimeout(hidePanelTimeoutId);
+                    hidePanelTimeoutId = null;
+                }
+
+                if (!isSensorConnected || (engagedUser == null)) {
+                    // if there is no engaged user or no sensor connected, we hide the choose background
+                    // control panel after 10 seconds
+                    hidePanelTimeoutId = setTimeout(function () {
+                        setChoosePanelVisibility(false);
+                        hidePanelTimeoutId = null;
+                    }, 10000);
+                }
+            }
+
+            // Update sensor state and perform UI transitions (showing/hiding appropriate UI elements)
+            // related to sensor status or engagement state changes
+            var delayedConfigTimeoutId = null;
+            function updateUserState(newIsSensorConnected, newEngagedUser, sensorToConfig) {
+                var hasEngagedUser = engagedUser != null;
+                var newHasEngagedUser = newEngagedUser != null;
+
+                // If there's a pending configuration change when state changes again, cancel previous timeout
+                if (delayedConfigTimeoutId != null) {
+                    clearTimeout(delayedConfigTimeoutId);
+                    delayedConfigTimeoutId = null;
+                }
+
+                if ((isSensorConnected != newIsSensorConnected) || (engagedUser != newEngagedUser)) {
+                    if (newIsSensorConnected) {
+
+                        var immediateConfig = {};
+                        var delayedConfig = {};
+                        immediateConfig[Kinect.INTERACTION_STREAM_NAME] = { "enabled": true };
+                        immediateConfig[Kinect.USERVIEWER_STREAM_NAME] = { "resolution": streamImageResolution };
+                        immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME] = { "resolution": streamImageResolution };
+
+                        setCursorVisibility(newHasEngagedUser);
+                        setCanvasVisibility(userViewerCanvasElement, !newHasEngagedUser);
+                        setCanvasVisibility(backgroundRemovalCanvasElement, newHasEngagedUser);
+
+                        if (newHasEngagedUser) {
+                            immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME].enabled = true;
+                            immediateConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME].trackingId = newEngagedUser;
+
+                            delayedConfig[Kinect.USERVIEWER_STREAM_NAME] = { "enabled": false };
+                        } else {
+                            immediateConfig[Kinect.USERVIEWER_STREAM_NAME].enabled = true;
+
+                            if (hasEngagedUser) {
+                                delayedConfig[Kinect.BACKGROUNDREMOVAL_STREAM_NAME] = { "enabled": false };
+                            }
+                        }
+
+                        // Perform immediate configuration
+                        sensorToConfig.postConfig(immediateConfig, configError);
+
+                        // schedule delayed configuration for 2 seconds later
+                        if (!isEmptyObject(delayedConfig)) {
+                            delayedConfigTimeoutId = setTimeout(function () {
+                                sensorToConfig.postConfig(delayedConfig, configError);
+                                delayedConfigTimeoutId = null;
+                            }, 2000);
+                        }
+                    } else {
+                        setCursorVisibility(false);
+                        setCanvasVisibility(userViewerCanvasElement, false);
+                        setCanvasVisibility(backgroundRemovalCanvasElement, false);
+                    }
+                }
+
+                isSensorConnected = newIsSensorConnected;
+                engagedUser = newEngagedUser;
+
+                resetHidePanelTimeout();
+            }
+
+            // Get the id of the engaged user, if present, or null if there is no engaged user
+            function findEngagedUser(userStates) {
+                var engagedUserId = null;
+
+                for (var i = 0; i < userStates.length; ++i) {
+                    var entry = userStates[i];
+                    if (entry.userState == "engaged") {
+                        engagedUserId = entry.id;
+                        break;
+                    }
+                }
+
+                return engagedUserId;
+            }
+
+            // Respond to user state change event
+            function onUserStatesChanged(newUserStates) {
+                var newEngagedUser = findEngagedUser(newUserStates);
+
+                updateUserState(isSensorConnected, newEngagedUser, sensor);
+            }
+
+            // Create sensor and UI adapter layers
+            var sensor = Kinect.sensor(Kinect.DEFAULT_SENSOR_NAME, function (sensorToConfig, isConnected) {
+                if (isConnected) {
+                    // Determine what is the engagement state upon connection
+                    sensorToConfig.getConfig(function (data) {
+                        var engagedUserId = findEngagedUser(data[Kinect.INTERACTION_STREAM_NAME].userStates);
+
+                        updateUserState(true, engagedUserId, sensorToConfig);
+                    });
+                } else {
+                    updateUserState(false, engagedUser, sensorToConfig);
+                }
+            });
+            var uiAdapter = KinectUI.createAdapter(sensor);
+
+            uiAdapter.promoteButtons();
+            cursor = uiAdapter.createDefaultCursor();
+            userViewerCanvasElement = document.getElementById("userViewerCanvas");
+            backgroundRemovalCanvasElement = document.getElementById("backgroundRemovalCanvas");
+            uiAdapter.bindStreamToCanvas(Kinect.USERVIEWER_STREAM_NAME, userViewerCanvasElement);
+            uiAdapter.bindStreamToCanvas(Kinect.BACKGROUNDREMOVAL_STREAM_NAME, backgroundRemovalCanvasElement);
+
+            sensor.addEventHandler(function (event) {
+                switch (event.category) {
+                    case Kinect.USERSTATE_EVENT_CATEGORY:
+                        switch (event.eventType) {
+                            case Kinect.USERSTATESCHANGED_EVENT_TYPE:
+                                onUserStatesChanged(event.userStates);
+                                break;
+                        }
+                        break;
+                }
+            });
+
+            setChoosePanelVisibility(false);
+            $("#togglePanelButton").click(function (event) {
+                if (isChoosePanelVisible()) {
+                    setChoosePanelVisibility(false);
+                } else {
+                    setChoosePanelVisibility(true);
+                    resetHidePanelTimeout();
+                }
+            });
+            $(".imgButtonContainer .kinect-button").click(function (event) {
+                var imgElement = $("img", event.currentTarget)[0];
+                document.getElementById("backgroundImg").src = imgElement.src;
+                resetHidePanelTimeout();
+            });
+        });
+    </script>
+    <link rel="stylesheet" type="text/css" href="Kinect-1.8.0.css" /> 
+    <style type="text/css">
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI';
+        }
+
+        #uiContainer {
+            position: relative;
+            margin: 0 auto;
+            width: 100vw;
+            height: 100%;
+        }
+
+        #logoImg {
+            position: absolute;
+            top: 18px;
+            left: 26px;
+            width: 100px;
+            height: 40px;
+        }
+
+        #sampleName {
+            position: relative;
+            display: block;
+            text-align: right;
+            font-size: 16pt;
+            color: gray;
+            top: 24px;
+            margin-right: 26px;
+        }
+
+        #backgroundContainer {
+            position: absolute;
+            top: 80px;
+            width: 100vw;
+            height: 56.25vw;
+            margin-bottom: 26px;
+        }
+
+        @media screen and (max-width: 960px) {
+            #uiContainer {
+                width: 960px;
+            }
+
+            #backgroundContainer {
+                width: 960px;
+                height: 540px;
+            }
+        }
+
+        @media screen and (min-width: 1600px) {
+            #uiContainer {
+                width: 1600px;
+            }
+
+            #backgroundContainer {
+                width: 1600px;
+                height: 900px;
+            }
+        }
+
+        #backgroundImg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .streamImageCanvas {
+            position: absolute;
+            width: 75%;
+            height: 100%;
+            top: 0;
+            left: 12.5%;
+            opacity: 0.0;
+            transition: opacity 1.0s;
+        }
+
+        .streamImageCanvas.showing {
+            opacity: 1.0;
+            transition: opacity 1.0s;
+        }
+
+        #buttonContainer {
+            position: absolute;
+            display: block;
+            width: 100%;
+            height: 160px;
+            bottom: 0;
+        }
+
+        #choosePanel {
+            position: absolute;
+            background-color: white;
+            width: 100%;
+            height: 100%;
+            top: 100%;
+            transition: top 0.4s;
+        }
+
+        #choosePanel.showing {
+            top: 0;
+            transition: top 0.4s;
+        }
+
+        .commandButtonContainer {
+            position: absolute;
+            width: 18%;
+            height: 100%;
+            top: 0;
+            left: 3%;
+        }
+
+        .imgButtonContainer {
+            position: absolute;
+            width: 18%;
+            height: 100%;
+            top: 0;
+        }
+
+        #togglePanelButton {
+            /* Add an explicit background color to make sure mouse/touch events get routed
+               to button even when hovering/pressing over transparent area around button edge. */
+            background-color: rgba(0,0,0,0.0);
+        }
+
+        #imgButtonContainer1 {
+            left: 25%;
+        }
+
+        #imgButtonContainer2 {
+            left: 43%;
+        }
+
+        #imgButtonContainer3 {
+            left: 61%;
+        }
+
+        #imgButtonContainer4 {
+            left: 79%;
+        }
+
+        .kinect-button.tile {
+            position: relative;
+            display: block;
+            width: 170px;
+            height: 100px;
+            margin: 30px auto;
+            padding: 0;
+        }
+
+        .kinect-button.tile .commandButtonContent {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-style: solid;
+            border-color: white;
+            border-width: 2px;
+            transition: border-width 0.15s;
+            left: -2px;
+            top: -2px;
+        }
+
+        .kinect-button.image {
+            position: relative;
+            display: block;
+            width: 170px;
+            height: 100px;
+            margin: 30px auto;
+            padding: 0;
+        }
+
+        .kinect-button img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .kinect-button-text {
+            font-size: 14pt;
+            width: 100%;
+            height: 3em;
+            margin-top: -1.5em;
+        }
+
+        @media screen and (min-width: 1280px) and (max-width: 1600px) {
+            #buttonContainer {
+                height: 186px;
+            }
+
+            .kinect-button.tile {
+                width: 224px;
+                height: 126px;
+            }
+
+            .kinect-button.image {
+                width: 224px;
+                height: 126px;
+            }
+
+            .kinect-button-text {
+                font-size: 16pt;
+            }
+        }
+
+        @media screen and (min-width: 1600px) {
+            #buttonContainer {
+                height: 222px;
+            }
+
+            .kinect-button.tile {
+                width: 288px;
+                height: 162px;
+            }
+
+            .kinect-button.image {
+                width: 288px;
+                height: 162px;
+            }
+
+            .kinect-button-text {
+                font-size: 18pt;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="uiContainer">
+        <img id="logoImg" src="Images\logo.png"/>
+        <span id="sampleName">Kinect Web Basics</span>
+        <div id="backgroundContainer">
+            <img id="backgroundImg" src="Images\beach.jpg"/>
+            <canvas id="userViewerCanvas" class="streamImageCanvas"></canvas>
+            <canvas id="backgroundRemovalCanvas" class="streamImageCanvas"></canvas>
+        </div>
+        <div id="buttonContainer">
+            <div id="choosePanel">
+                <div id="imgButtonContainer1" class="imgButtonContainer">
+                    <div class="kinect-button image">
+                        <img src="Images/beach.jpg"/>
+                    </div>
+                </div>
+                <div id="imgButtonContainer2" class="imgButtonContainer">
+                    <div class="kinect-button image">
+                        <img src="Images/fireworks.jpg"/>
+                    </div>
+                </div>
+                <div id="imgButtonContainer3" class="imgButtonContainer">
+                    <div class="kinect-button image">
+                        <img src="Images/hamlet.jpg"/>
+                    </div>
+                </div>
+                <div id="imgButtonContainer4" class="imgButtonContainer">
+                    <div class="kinect-button image">
+                        <img src="Images/operahouse.jpg"/>
+                    </div>
+                </div>
+            </div>
+            <div class="commandButtonContainer">
+                <div id="togglePanelButton" class="kinect-button tile">
+                    <div class="commandButtonContent">
+                        <span class="kinect-button-text"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
