@@ -25,6 +25,44 @@ function interpretData(bodyFrame) {
 		user=bodyFrame.bodies[i]; 
 	}
 	
+	switch (body.HandRightState)
+    {
+        case HandState.Open:
+			document.getElementById("grab").innerHTML = "Right is open";
+            break;
+        case HandState.Closed:
+			document.getElementById("grab").innerHTML = "Right is closed";
+            break;
+        case HandState.Lasso:
+            break;
+        case HandState.Unknown:
+			document.getElementById("grab").innerHTML = "I dont know what your doing with your right hand";
+            break;
+        case HandState.NotTracked:
+            break;
+        default:
+            break;
+    }
+
+    switch (body.HandLeftState)
+    {
+        case HandState.Open:
+			document.getElementById("grab1").innerHTML = "left is open";
+            break;
+        case HandState.Closed:
+			document.getElementById("grab1").innerHTML = "left is closed";
+            break;
+        case HandState.Lasso:
+            break;
+        case HandState.Unknown:
+			document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand";
+            break;
+        case HandState.NotTracked:
+            break;
+        default:
+            break;
+    }
+	
 	try{
 	var rightHandPositionX = user.joints[11].depthX;
 	var rightHandPositionY = user.joints[11].depthY;
@@ -36,7 +74,6 @@ function interpretData(bodyFrame) {
 	
 	ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
 	ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
-	console.log("WHAM FUCKING BAM");
 	}
 	catch(exception){
 	}
@@ -52,7 +89,9 @@ function interpretData(bodyFrame) {
 Hello World!
 
 <div id = "dab"> </div>
+<div id = "grab"> </div>
 <div id = "dab1"> </div>
+<div id = "grab1"> </div>
 <style type="text/css">
       canvas { border: 1px solid black; }
     </style>
