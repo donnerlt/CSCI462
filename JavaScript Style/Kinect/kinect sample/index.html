@@ -2,74 +2,61 @@
 <head>
 <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
 <script>
-function drawPixel (x, y, r, g, b, a) {
-    var index = (x + y * canvasWidth) * 4;
-
-    canvasData.data[index + 0] = r;
-    canvasData.data[index + 1] = g;
-    canvasData.data[index + 2] = b;
-    canvasData.data[index + 3] = a;
-}
-
-function updateCanvas() {
-    ctx.putImageData(canvasData, 0, 0);
-}
-
 var socket = io.connect('http://localhost:8000/');
 socket.on('bodyFrame', interpretData);
 function interpretData(bodyFrame) {
     // Web Socket message:
 	var user;
-	for(i=0; i<=6;i++){
+	for(i=0; i<=7;i++){
 	if (bodyFrame.bodies[i]){
-		user=bodyFrame.bodies[i]; 
+		user=bodyFrame.bodies[i];
+		
 	}
-	
-	switch (body.HandRightState)
+	switch (user.rightHandState)
     {
-        case HandState.Open:
+        case 2:
 			document.getElementById("grab").innerHTML = "Right is open";
-			ctx.fillStyle="#00ff00";
+			ctx.fillStyle="Purple";
 			ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
             break;
-        case HandState.Closed:
+        case 3:
 			document.getElementById("grab").innerHTML = "Right is closed";
-			ctx.fillStyle="#ff000000";
+			ctx.fillStyle="Green";
 			ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
             break;
-        case HandState.Lasso:
+        case 4:
             break;
-        case HandState.Unknown:
+        case 0:
 			document.getElementById("grab").innerHTML = "I dont know what your doing with your right hand";
             break;
-        case HandState.NotTracked:
+        case 1:
             break;
         default:
             break;
     }
 
-    switch (body.HandLeftState)
+    switch (user.leftHandState)
     {
-        case HandState.Open:
+        case 2:
 			document.getElementById("grab1").innerHTML = "left is open";
-			ctx.fillStyle="#00ff00";
-			ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
+			ctx.fillStyle="BLUE";
+			
             break;
-        case HandState.Closed:
+        case 3:
 			document.getElementById("grab1").innerHTML = "left is closed";
-			ctx.fillStyle="#ff000000";
-			ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
+			ctx.fillStyle="RED";
+			
             break;
-        case HandState.Lasso:
+        case 4:
             break;
-        case HandState.Unknown:
+        case 0:
 			document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand";
             break;
-        case HandState.NotTracked:
+        case 1:
             break;
         default:
             break;
-    }
+    } 
 	
 	try{
 	var rightHandPositionX = user.joints[11].depthX;
@@ -80,7 +67,8 @@ function interpretData(bodyFrame) {
 	document.getElementById("dab").innerHTML = rightHandPositionX+"X , "+rightHandPositionY+" Y";
 	document.getElementById("dab1").innerHTML = leftHandPositionX+"X , "+leftHandPositionY+" Y";
 	
-	
+	ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
+	ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
 	
 	}
 	catch(exception){
@@ -94,6 +82,7 @@ function interpretData(bodyFrame) {
 </script>
 </head>
 <body>
+
 Hello World!
 
 <div id = "dab"> </div>
@@ -104,17 +93,19 @@ Hello World!
       canvas { border: 1px solid black; }
     </style>
 
-<canvas id="myCanvas" width="600" height="800"></canvas>
 <script>
-var canvas = document.getElementById("myCanvas");
+var canv = document.createElement('canvas');
+canv.id = 'myCanvas';
+
+document.body.appendChild(canv);
+
+var canvas = document.getElementById('myCanvas');
 var canvasWidth = canvas.width;
 var canvasHeight = canvas.height;
 var ctx = canvas.getContext("2d");
 var canvasData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
 ctx.fillRect(75,75,1,1);
-
 </script>
-
 
 </body>
 </html>
