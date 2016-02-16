@@ -29,9 +29,13 @@ function interpretData(bodyFrame) {
     {
         case HandState.Open:
 			document.getElementById("grab").innerHTML = "Right is open";
+			ctx.fillStyle="#00ff00";
+			ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
             break;
         case HandState.Closed:
 			document.getElementById("grab").innerHTML = "Right is closed";
+			ctx.fillStyle="#ff000000";
+			ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
             break;
         case HandState.Lasso:
             break;
@@ -48,9 +52,13 @@ function interpretData(bodyFrame) {
     {
         case HandState.Open:
 			document.getElementById("grab1").innerHTML = "left is open";
+			ctx.fillStyle="#00ff00";
+			ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
             break;
         case HandState.Closed:
 			document.getElementById("grab1").innerHTML = "left is closed";
+			ctx.fillStyle="#ff000000";
+			ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
             break;
         case HandState.Lasso:
             break;
@@ -72,8 +80,8 @@ function interpretData(bodyFrame) {
 	document.getElementById("dab").innerHTML = rightHandPositionX+"X , "+rightHandPositionY+" Y";
 	document.getElementById("dab1").innerHTML = leftHandPositionX+"X , "+leftHandPositionY+" Y";
 	
-	ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
-	ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
+	
+	
 	}
 	catch(exception){
 	}
