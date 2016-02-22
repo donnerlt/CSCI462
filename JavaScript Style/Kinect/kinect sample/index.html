@@ -4,6 +4,13 @@
 <script>
 var socket = io.connect('http://localhost:8000/');
 socket.on('bodyFrame', interpretData);
+var trans = 1;
+var trans2 = 0;
+
+var left =[];
+var right =[];
+
+function fun1(x) {return (Math.pow((x*trans),2) + trans2);}
 function interpretData(bodyFrame) {
     // Web Socket message:
 	var user;
@@ -19,10 +26,14 @@ function interpretData(bodyFrame) {
     {
         case 2:
 			document.getElementById("grab").innerHTML = "Right is open";
+			right.unshift(hand);
+			delete right[1];
 			ctx.fillStyle="Purple";
 			break;
         case 3:
 			document.getElementById("grab").innerHTML = "Right is closed";
+			right.unshift(rgrip);
+			delete right[1];
 			ctx.fillStyle="Green";
             break;
         case 4:
@@ -41,11 +52,17 @@ function interpretData(bodyFrame) {
     {
         case 2:
 			document.getElementById("grab1").innerHTML = "left is open";
+			
+			left.unshift(lhand);
+			delete left[1];
 			ctx.fillStyle="BLUE";
 			
             break;
         case 3:
 			document.getElementById("grab1").innerHTML = "left is closed";
+			
+			left.unshift(lgrip);
+			delete left[1];
 			ctx.fillStyle="RED";
 			
             break;
@@ -71,15 +88,16 @@ function interpretData(bodyFrame) {
 	document.getElementById("dab1").innerHTML = leftHandPositionX+"X , "+leftHandPositionY+" Y";
 	
 	//draws filled rectangles at the position of the hands
-	ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,5,5);
-	ctx.fillRect(rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight,5,5);
+	//ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,5,5);
+	//ctx.fillRect(rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight,5,5);
 	
 	//cleans canvas each frame and redraws hand images
 	ctx.clearRect(0,0,canvasWidth,canvasHeight);
 	if(imageLoaded){
-		ctx.drawImage(hand, leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight);
-		ctx.drawImage(hand, rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight);
-	
+		ctx.drawImage(left[0], leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight);
+		ctx.drawImage(right[0], rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight);
+		showAxes(ctx,axes);
+		funGraph(ctx,axes,fun1,"rgb(11,153,11)",1);
 	
 	}
 	
@@ -87,7 +105,36 @@ function interpretData(bodyFrame) {
 	catch(exception){
 	}
 	
+	
 
+}
+
+function funGraph (ctx,axes,func,color,thick) {
+ var xx, yy, dx=4, x0=axes.x0, y0=axes.y0, scale=axes.scale;
+ var iMax = Math.round((ctx.canvas.width-x0)/dx);
+ var iMin = axes.doNegativeX ? Math.round(-x0/dx) : 0;
+ ctx.beginPath();
+ ctx.lineWidth = thick;
+ ctx.strokeStyle = color;
+
+ for (var i=iMin;i<=iMax;i++) {
+  xx = dx*i; yy = scale*func(xx/scale);
+  if (i==iMin) ctx.moveTo(x0+xx,y0-yy);
+  else		   ctx.lineTo(x0+xx,y0-yy);
+ }
+ ctx.stroke();
+}
+
+//draw the axes
+function showAxes(ctx,axes) {
+ var x0=axes.x0, w=ctx.canvas.width;
+ var y0=axes.y0, h=ctx.canvas.height;
+ var xmin = axes.doNegativeX ? 0 : x0;
+ ctx.beginPath();
+ ctx.strokeStyle = "rgb(128,128,128)"; 
+ ctx.moveTo(xmin,y0); ctx.lineTo(w,y0);	 // X axis
+ ctx.moveTo(x0,0);	  ctx.lineTo(x0,h);	 // Y axis
+ ctx.stroke();
 }
 }
 
@@ -119,13 +166,26 @@ var canvas = document.getElementById('myCanvas');
 var canvasWidth = canvas.width;
 var canvasHeight = canvas.height;
 var ctx = canvas.getContext("2d");
+var axes={};
+ axes.x0 = .5 + .5*canvas.width;  // x0 pixels from left to x=0
+ axes.y0 = .5 + .5*canvas.height; // y0 pixels from top to y=0
+ axes.scale = 40;				  // 40 pixels from x=0 to x=1
+ axes.doNegativeX = true;
 
 var imageLoaded = false;
 var hand = new Image();
-hand.src='../../../hand.png';
+var lhand = new Image();
+var rgrip = new Image();
+var lgrip = new Image();
+hand.src='hand.png';
+lhand.src='lhand.png';
+rgrip.src='rgrip.png';
+lgrip.src='lgrip.png';
+
 hand.onload = function(){
 imageLoaded=true;
-ctx.drawImage(hand,0,0);
+left.push(lhand);
+right.push(hand);
 }
 
 </script>

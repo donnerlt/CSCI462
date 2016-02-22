@@ -18,6 +18,18 @@ app.get('/hand.png', function(req, res) {
     res.sendFile(__dirname + '/hand.png');
 });
 
+app.get('/lhand.png', function(req, res) {
+    res.sendFile(__dirname + '/lhand.png');
+});
+
+app.get('/lgrip.png', function(req, res) {
+    res.sendFile(__dirname + '/lgrip.png');
+});
+
+app.get('/rgrip.png', function(req, res) {
+    res.sendFile(__dirname + '/rgrip.png');
+});
+
 kinect.on('bodyFrame', function(bodyFrame){
     io.sockets.emit('bodyFrame', bodyFrame);
 });
