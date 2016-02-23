@@ -10,6 +10,12 @@ var trans2 = 0;
 var left =[];
 var right =[];
 
+function getURLParameter(name) {
+  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+}
+var graphType = getURLParameter("type");
+console.log(graphType);
+
 function fun1(x) {return (Math.pow((x*trans),2) + trans2);}
 function interpretData(bodyFrame) {
     // Web Socket message:
