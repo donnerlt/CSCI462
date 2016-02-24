@@ -16,15 +16,21 @@ function getURLParameter(name) {
 var graphType = getURLParameter("type");
 console.log(graphType);
 
+function typeDetermination(){
 if (graphType == "conic"){
 	console.log("Loading Conics");
-	document.createElement("script").src="conic.js";
+	var loadin = document.createElement("script");
+	loadin.src = "conic.js";
+	document.body.appendChild(loadin);
 	}
 else if(graphType == "polynomial"){
 	console.log("Loading Polynomials");
-	document.createElement("script").src="polynomial.js";
+	var loadin = document.createElement("script");
+	loadin.src = "polynomial.js";
+	document.body.appendChild(loadin);
 }
-	
+}
+
 function fun1(x) {return (Math.pow((x*trans),2) + trans2);}
 function interpretData(bodyFrame) {
     // Web Socket message:
@@ -156,7 +162,7 @@ function showAxes(ctx,axes) {
 
 </script>
 </head>
-<body>
+<body onload="typeDetermination()">
 
 Hello World!
 
