@@ -16,6 +16,15 @@ function getURLParameter(name) {
 var graphType = getURLParameter("type");
 console.log(graphType);
 
+if (graphType == "conic"){
+	console.log("Loading Conics");
+	document.createElement("script").src="conic.js";
+	}
+else if(graphType == "polynomial"){
+	console.log("Loading Polynomials");
+	document.createElement("script").src="polynomial.js";
+}
+	
 function fun1(x) {return (Math.pow((x*trans),2) + trans2);}
 function interpretData(bodyFrame) {
     // Web Socket message:

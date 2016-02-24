@@ -8,10 +8,18 @@ console.log(process.cwd()+"\\hand.png");
 if(kinect.open()) {
 server.listen(8000);
 console.log('Server listening on port 8000');
-console.log('Point your browser to http://localhost:8000');
+console.log('Point your browser to http://localhost:8000/menu.html');
 
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/howto.html', function(req, res) {
+    res.sendFile(__dirname + '/howto.html');
+});
+
+app.get('/menu.html', function(req, res) {
+    res.sendFile(__dirname + '/menu.html');
 });
 
 app.get('/hand.png', function(req, res) {
