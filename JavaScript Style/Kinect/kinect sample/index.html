@@ -6,6 +6,8 @@ var socket = io.connect('http://localhost:8000/');
 socket.on('bodyFrame', interpretData);
 var trans = 1;
 var trans2 = 0;
+var transnum = 1;
+var transdenom =1;
 
 var left =[];
 var right =[];
@@ -17,21 +19,32 @@ var graphType = getURLParameter("type");
 console.log(graphType);
 
 function typeDetermination(){
-if (graphType == "conic"){
-	console.log("Loading Conics");
+if (graphType == "parabola"){
+	console.log("Loading parabola");
 	var loadin = document.createElement("script");
-	loadin.src = "conic.js";
+	loadin.src = "parabola.js";
 	document.body.appendChild(loadin);
 	}
-else if(graphType == "polynomial"){
-	console.log("Loading Polynomials");
+else if(graphType == "line"){
+	console.log("Loading line");
 	var loadin = document.createElement("script");
-	loadin.src = "polynomial.js";
+	loadin.src = "line.js";
+	document.body.appendChild(loadin);
+}
+else if(graphType == "hyperbola"){
+	console.log("Loading hyperbola");
+	var loadin = document.createElement("script");
+	loadin.src = "hyperbola.js";
+	document.body.appendChild(loadin);
+}
+else if(graphType == "ellipse"){
+	console.log("Loading ellipse");
+	var loadin = document.createElement("script");
+	loadin.src = "ellipse.js";
 	document.body.appendChild(loadin);
 }
 }
 
-function fun1(x) {return (Math.pow((x*trans),2) + trans2);}
 function interpretData(bodyFrame) {
     // Web Socket message:
 	var user;
@@ -55,7 +68,7 @@ function interpretData(bodyFrame) {
 			document.getElementById("grab").innerHTML = "Right is closed";
 			right.unshift(rgrip);
 			delete right[1];
-			ctx.fillStyle="Green";
+			transdenom++;
             break;
         case 4:
             break;
@@ -76,7 +89,6 @@ function interpretData(bodyFrame) {
 			
 			left.unshift(lhand);
 			delete left[1];
-			ctx.fillStyle="BLUE";
 			
             break;
         case 3:
@@ -84,7 +96,7 @@ function interpretData(bodyFrame) {
 			
 			left.unshift(lgrip);
 			delete left[1];
-			ctx.fillStyle="RED";
+			transnum++;
 			
             break;
         case 4:
@@ -113,12 +125,16 @@ function interpretData(bodyFrame) {
 	//ctx.fillRect(rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight,5,5);
 	
 	//cleans canvas each frame and redraws hand images
+ 
 	ctx.clearRect(0,0,canvasWidth,canvasHeight);
 	if(imageLoaded){
 		ctx.drawImage(left[0], leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight);
 		ctx.drawImage(right[0], rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight);
 		showAxes(ctx,axes);
 		funGraph(ctx,axes,fun1,"rgb(11,153,11)",1);
+		msg = getFormula();
+		ctx.fillText(msg,10,20);
+
 	
 	}
 	
@@ -176,6 +192,7 @@ Hello World!
 
 <script>
 //creates canvas element and ataches it to the body of the html Document
+
 var canv = document.createElement('canvas');
 canv.id = 'myCanvas';
 canv.width=480;
@@ -192,6 +209,8 @@ var axes={};
  axes.y0 = .5 + .5*canvas.height; // y0 pixels from top to y=0
  axes.scale = 40;				  // 40 pixels from x=0 to x=1
  axes.doNegativeX = true;
+
+
 
 var imageLoaded = false;
 var hand = new Image();
