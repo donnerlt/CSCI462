@@ -1,16 +1,18 @@
 {
-    "name": "webclient-express-server",
-    "version": "0.0.20",
-    "description": "show skeletons in browser",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Wouter Verweirder ",
-    "license": "MIT",
-    "dependencies": {
-        "express": "~4.9.5",
-        "socket.io": "~1.1.0"
-		}
-		}
-		
+  "name": "kinectagraph",
+  "version": "0.0.1",
+  "description": "tracks information about hands to allow the user to manipulate graphs using a kinect and a web browser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Callum Brill",
+  "license": "MIT",
+  "dependencies": {
+	"node-gyp": "~3.3.1",
+    "express": "~4.9.5",
+    "socket.io": "~1.1.0",
+	"kinect2":"~0.1.1"
+  },
+  "devDependencies": {}
+}
