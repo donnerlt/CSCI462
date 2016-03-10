@@ -1,0 +1,116 @@
+<html>
+<head>
+<script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
+<script>
+function drawPixel (x, y, r, g, b, a) {
+    var index = (x + y * canvasWidth) * 4;
+
+    canvasData.data[index + 0] = r;
+    canvasData.data[index + 1] = g;
+    canvasData.data[index + 2] = b;
+    canvasData.data[index + 3] = a;
+}
+
+function updateCanvas() {
+    ctx.putImageData(canvasData, 0, 0);
+}
+
+var socket = io.connect('http://localhost:8000/');
+socket.on('bodyFrame', interpretData);
+function interpretData(bodyFrame) {
+    // Web Socket message:
+	var user;
+	for(i=0; i<=6;i++){
+	if (bodyFrame.bodies[i]){
+		user=bodyFrame.bodies[i]; 
+	}
+	
+	switch (user.rightHandState)
+    {
+        case 2:
+			document.getElementById("grab").innerHTML = "Right is open";
+			ctx.fillStyle="#00ff00";
+            break;
+        case 3:
+			document.getElementById("grab").innerHTML = "Right is closed";
+			ctx.fillStyle="#ff000000";
+            break;
+        case 4:
+            break;
+        case 0:
+			document.getElementById("grab").innerHTML = "I dont know what you're doing with your right hand";
+            break;
+        case 1:
+            break;
+        default:
+            break;
+    }
+
+    switch (user.rightHandState)
+    {
+        case 2:
+			document.getElementById("grab1").innerHTML = "left is open";
+			ctx.fillStyle="#00ff00";
+            break;
+        case 3:
+			document.getElementById("grab1").innerHTML = "left is closed";
+			ctx.fillStyle="#ff000000";
+            break;
+        case 4:
+            break;
+        case 0:
+			document.getElementById("grab1").innerHTML = "I dont know what you're doing with your left hand";
+            break;
+        case 1:
+            break;
+        default:
+            break;
+    }
+	
+	try{
+	var rightHandPositionX = user.joints[11].depthX;
+	var rightHandPositionY = user.joints[11].depthY;
+	
+	var leftHandPositionX = user.joints[7].depthX;
+	var leftHandPositionY = user.joints[7].depthY;
+	document.getElementById("dab").innerHTML = rightHandPositionX+"X , "+rightHandPositionY+" Y";
+	document.getElementById("dab1").innerHTML = leftHandPositionX+"X , "+leftHandPositionY+" Y";
+	
+	ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
+	ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
+	}
+	catch(exception){
+	}
+	
+
+}
+}
+
+
+</script>
+</head>
+<body>
+Hello World!
+
+<div id = "dab"> </div>
+<div id = "grab"> </div>
+<div id = "dab1"> </div>
+<div id = "grab1"> </div>
+<style type="text/css">
+      canvas { border: 1px solid black; }
+    </style>
+
+<canvas id="myCanvas" width="600" height="800"></canvas>
+<script>
+var canvas = document.getElementById("myCanvas");
+var canvasWidth = canvas.width;
+var canvasHeight = canvas.height;
+var ctx = canvas.getContext("2d");
+var canvasData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+ctx.fillRect(75,75,1,1);
+
+</script>
+
+
+</body>
+</html>

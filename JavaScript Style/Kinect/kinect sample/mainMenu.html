@@ -1,0 +1,116 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Kinectagraph</title>
+</head>
+
+<body>
+<img id="parabolaButton" width="200" height="100" src="ButtonIcons\parabolaButton.jpg" style="display:none;"/>
+<img id="circleButton" width="200" height="100" src="ButtonIcons\expences-button-png-hi.png" style="display:none;"/>
+<img id="ellipseButton" width="200" height="100" src="ButtonIcons\expences-button-png-hi.png" style="display:none;"/>
+<img id="hyperbolaButton" width="200" height="100" src="ButtonIcons\expences-button-png-hi.png" style="display:none;"/>
+<img id="lineButton" width="200" height="100" src="ButtonIcons\expences-button-png-hi.png" style="display:none;"/>
+<img id="howToButton" width="200" height="100" src="ButtonIcons\howToButton.jpg" style="display:none;"/>
+<img id="kinectagraphIcon" width="200" height="100" src="ButtonIcons\KINECTAGRAPH_ICON.png" style="display:none;"/>
+
+<!-- http://www.purplemath.com/modules/conics.htm for information about equations for conics-->
+<!-- http://pterkildsen.com/2013/06/28/create-a-html5-canvas-element-with-clickable-elements/ -->
+<!-- http://stackoverflow.com/questions/18017260/how-to-add-hyperlink-to-image-in-canvas-element -->
+
+<canvas id="myCanvas" width=500 height=600 style="border:1px solid black"></canvas>
+<script>
+var canvas = document.getElementById("myCanvas");
+var context = canvas.getContext('2d');
+//testing the first button
+var linkText = "/?type=parabola";
+//testing how to page
+var howToLinkText = "howto.html";
+//x and y for the event look at bottom left corner of the area not top right
+var linkX = 200;
+var linkY = 150;
+var linkHeight = 50;
+var linkWidth = 100;
+
+//adding other button info - how to button
+var howToLinkX = 200;
+var howToLinkY = 550;
+//link height and width will always be the same
+
+//var buttons = [];
+
+//for testing
+//var picSrc = "expences-button-png-hi.png";
+
+window.onload = function () {
+	//var img = new Image();
+	var logo = document.getElementById("kinectagraphIcon");
+	
+	var img1 = document.getElementById("parabolaButton");
+	var img2 = document.getElementById("lineButton");
+	var img3 = document.getElementById("hyperbolaButton");
+	var img4 = document.getElementById("ellipseButton");
+	var img5 = document.getElementById("howToButton");
+	
+	context.drawImage(logo, 100, 10, 300, 50);
+	
+	//image, x and y coords, width, height
+	context.drawImage(img1, 200, 100, 100, 50);
+	context.drawImage(img2, 200, 200, 100, 50);
+	context.drawImage(img3, 200, 300, 100, 50);
+	context.drawImage(img4, 200, 400, 100, 50);
+	context.drawImage(img5, 200, 500, 100, 50);
+	
+	//add mouse listeners for now
+	canvas.addEventListener("mousemove", on_mousemove, false);
+	canvas.addEventListener("click", on_click, false);
+	
+}
+
+
+//check if the mouse is over the link and change cursor style
+function on_mousemove (ev) {
+  var x, y;
+
+  // Get the mouse position relative to the canvas element.
+  if (ev.layerX || ev.layerX == 0) { //for firefox
+    x = ev.layerX;
+    y = ev.layerY;
+  }
+  x-=canvas.offsetLeft;
+  y-=canvas.offsetTop;
+
+  //is the mouse over the link?
+  if(x>=linkX && x <= (linkX + linkWidth) && y<=linkY && y>= (linkY-linkHeight)){
+      document.body.style.cursor = "pointer";
+      inLink=true;
+  }
+  //is the mouse over the how to link
+  else if(x>=howToLinkX && x <= (howToLinkX + linkWidth) && y<=howToLinkY && y>= (howToLinkY-linkHeight)){
+	  inHowToLink=true;
+  }
+  else{
+      document.body.style.cursor = "";
+      inLink=false;
+	  inHowToLink=false;
+  }
+}
+
+//if the link has been clicked, go to link
+function on_click(e) {
+  if (inLink)  {
+    window.location = linkText;
+  }
+  else if(inHowToLink) {
+	window.location = howToLinkText;
+  }
+}
+
+//draw();
+
+</script>
+
+
+</body>
+
+</html> 

@@ -1,0 +1,1 @@
+function fun1(x) {return (((trans*x) + trans2));}

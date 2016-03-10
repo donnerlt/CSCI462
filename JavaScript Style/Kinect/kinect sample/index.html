@@ -4,25 +4,71 @@
 <script>
 var socket = io.connect('http://localhost:8000/');
 socket.on('bodyFrame', interpretData);
+var trans = 1;
+var trans2 = 0;
+var transnum = 1;
+var transdenom =1;
+
+var left =[];
+var right =[];
+
+function getURLParameter(name) {
+  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+}
+var graphType = getURLParameter("type");
+console.log(graphType);
+
+function typeDetermination(){
+if (graphType == "parabola"){
+	console.log("Loading parabola");
+	var loadin = document.createElement("script");
+	loadin.src = "parabola.js";
+	document.body.appendChild(loadin);
+	}
+else if(graphType == "line"){
+	console.log("Loading line");
+	var loadin = document.createElement("script");
+	loadin.src = "line.js";
+	document.body.appendChild(loadin);
+}
+else if(graphType == "hyperbola"){
+	console.log("Loading hyperbola");
+	var loadin = document.createElement("script");
+	loadin.src = "hyperbola.js";
+	document.body.appendChild(loadin);
+}
+else if(graphType == "ellipse"){
+	console.log("Loading ellipse");
+	var loadin = document.createElement("script");
+	loadin.src = "ellipse.js";
+	document.body.appendChild(loadin);
+}
+}
+
 function interpretData(bodyFrame) {
     // Web Socket message:
 	var user;
+	
+	// assigns a specific body to be the user
 	for(i=0; i<=7;i++){
 	if (bodyFrame.bodies[i]){
 		user=bodyFrame.bodies[i];
 		
 	}
+	//determines the state of the right hand an sets the painting color based on that
 	switch (user.rightHandState)
     {
         case 2:
 			document.getElementById("grab").innerHTML = "Right is open";
+			right.unshift(hand);
+			delete right[1];
 			ctx.fillStyle="Purple";
-			ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
-            break;
+			break;
         case 3:
 			document.getElementById("grab").innerHTML = "Right is closed";
-			ctx.fillStyle="Green";
-			ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
+			right.unshift(rgrip);
+			delete right[1];
+			transdenom++;
             break;
         case 4:
             break;
@@ -34,17 +80,23 @@ function interpretData(bodyFrame) {
         default:
             break;
     }
-
+	
+	//determines the state of the left hand an sets the painting color based on that
     switch (user.leftHandState)
     {
         case 2:
 			document.getElementById("grab1").innerHTML = "left is open";
-			ctx.fillStyle="BLUE";
+			
+			left.unshift(lhand);
+			delete left[1];
 			
             break;
         case 3:
 			document.getElementById("grab1").innerHTML = "left is closed";
-			ctx.fillStyle="RED";
+			
+			left.unshift(lgrip);
+			delete left[1];
+			transnum++;
 			
             break;
         case 4:
@@ -58,6 +110,7 @@ function interpretData(bodyFrame) {
             break;
     } 
 	
+	//next segment attempts to determine and track the position of the right and left hands and display that in the html body
 	try{
 	var rightHandPositionX = user.joints[11].depthX;
 	var rightHandPositionY = user.joints[11].depthY;
@@ -67,24 +120,65 @@ function interpretData(bodyFrame) {
 	document.getElementById("dab").innerHTML = rightHandPositionX+"X , "+rightHandPositionY+" Y";
 	document.getElementById("dab1").innerHTML = leftHandPositionX+"X , "+leftHandPositionY+" Y";
 	
-	ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
-	ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
+	//draws filled rectangles at the position of the hands
+	//ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,5,5);
+	//ctx.fillRect(rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight,5,5);
+	
+	//cleans canvas each frame and redraws hand images
+ 
+	ctx.clearRect(0,0,canvasWidth,canvasHeight);
+	if(imageLoaded){
+		ctx.drawImage(left[0], leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight);
+		ctx.drawImage(right[0], rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight);
+		showAxes(ctx,axes);
+		funGraph(ctx,axes,fun1,"rgb(11,153,11)",1);
+		msg = getFormula();
+		ctx.fillText(msg,10,20);
+
+	
+	}
 	
 	}
 	catch(exception){
 	}
 	
+	
 
+}
+
+function funGraph (ctx,axes,func,color,thick) {
+ var xx, yy, dx=4, x0=axes.x0, y0=axes.y0, scale=axes.scale;
+ var iMax = Math.round((ctx.canvas.width-x0)/dx);
+ var iMin = axes.doNegativeX ? Math.round(-x0/dx) : 0;
+ ctx.beginPath();
+ ctx.lineWidth = thick;
+ ctx.strokeStyle = color;
+
+ for (var i=iMin;i<=iMax;i++) {
+  xx = dx*i; yy = scale*func(xx/scale);
+  if (i==iMin) ctx.moveTo(x0+xx,y0-yy);
+  else		   ctx.lineTo(x0+xx,y0-yy);
+ }
+ ctx.stroke();
+}
+
+//draw the axes
+function showAxes(ctx,axes) {
+ var x0=axes.x0, w=ctx.canvas.width;
+ var y0=axes.y0, h=ctx.canvas.height;
+ var xmin = axes.doNegativeX ? 0 : x0;
+ ctx.beginPath();
+ ctx.strokeStyle = "rgb(128,128,128)"; 
+ ctx.moveTo(xmin,y0); ctx.lineTo(w,y0);	 // X axis
+ ctx.moveTo(x0,0);	  ctx.lineTo(x0,h);	 // Y axis
+ ctx.stroke();
 }
 }
 
 
 </script>
 </head>
-<body>
-
-Hello World!
-
+<body onload="typeDetermination()">
 <div id = "dab"> </div>
 <div id = "grab"> </div>
 <div id = "dab1"> </div>
@@ -94,17 +188,43 @@ Hello World!
     </style>
 
 <script>
+//creates canvas element and ataches it to the body of the html Document
+
 var canv = document.createElement('canvas');
 canv.id = 'myCanvas';
-
+canv.width=1920;
+canv.height=1080;
 document.body.appendChild(canv);
+
 
 var canvas = document.getElementById('myCanvas');
 var canvasWidth = canvas.width;
 var canvasHeight = canvas.height;
 var ctx = canvas.getContext("2d");
-var canvasData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-ctx.fillRect(75,75,1,1);
+var axes={};
+ axes.x0 = .5 + .5*canvas.width;  // x0 pixels from left to x=0
+ axes.y0 = .5 + .5*canvas.height; // y0 pixels from top to y=0
+ axes.scale = 40;				  // 40 pixels from x=0 to x=1
+ axes.doNegativeX = true;
+
+
+
+var imageLoaded = false;
+var hand = new Image();
+var lhand = new Image();
+var rgrip = new Image();
+var lgrip = new Image();
+hand.src='hand.png';
+lhand.src='lhand.png';
+rgrip.src='rgrip.png';
+lgrip.src='lgrip.png';
+
+hand.onload = function(){
+imageLoaded=true;
+left.push(lhand);
+right.push(hand);
+}
+
 </script>
 
 </body>
