@@ -25,47 +25,43 @@ function interpretData(bodyFrame) {
 		user=bodyFrame.bodies[i]; 
 	}
 	
-	switch (user.handRightState)
+	switch (user.rightHandState)
     {
-        case WindowsPreview.Kinect.HandState.Open:
+        case 2:
 			document.getElementById("grab").innerHTML = "Right is open";
 			ctx.fillStyle="#00ff00";
-			ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
             break;
-        case WindowsPreview.Kinect.HandState.Closed:
+        case 3:
 			document.getElementById("grab").innerHTML = "Right is closed";
 			ctx.fillStyle="#ff000000";
-			ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
             break;
-        case WindowsPreview.Kinect.HandState.Lasso:
+        case 4:
             break;
-        case WindowsPreview.Kinect.HandState.Unknown:
-			document.getElementById("grab").innerHTML = "I dont know what your doing with your right hand";
+        case 0:
+			document.getElementById("grab").innerHTML = "I dont know what you're doing with your right hand";
             break;
-        case WindowsPreview.Kinect.HandState.NotTracked:
+        case 1:
             break;
         default:
             break;
     }
 
-    switch (user.handLeftState)
+    switch (user.rightHandState)
     {
-        case WindowsPreview.Kinect.HandState.Open:
+        case 2:
 			document.getElementById("grab1").innerHTML = "left is open";
 			ctx.fillStyle="#00ff00";
-			ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
             break;
-        case WindowsPreview.Kinect.HandState.Closed:
+        case 3:
 			document.getElementById("grab1").innerHTML = "left is closed";
 			ctx.fillStyle="#ff000000";
-			ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
             break;
-        case WindowsPreview.Kinect.HandState.Lasso:
+        case 4:
             break;
-        case WindowsPreview.Kinect.HandState.Unknown:
-			document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand";
+        case 0:
+			document.getElementById("grab1").innerHTML = "I dont know what you're doing with your left hand";
             break;
-        case WindowsPreview.Kinect.HandState.NotTracked:
+        case 1:
             break;
         default:
             break;
@@ -80,8 +76,8 @@ function interpretData(bodyFrame) {
 	document.getElementById("dab").innerHTML = rightHandPositionX+"X , "+rightHandPositionY+" Y";
 	document.getElementById("dab1").innerHTML = leftHandPositionX+"X , "+leftHandPositionY+" Y";
 	
-	
-	
+	ctx.fillRect(rightHandPositionX*canvasWidth,rightHandPositionY*canvasHeight,1,1);
+	ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,1,1);
 	}
 	catch(exception){
 	}

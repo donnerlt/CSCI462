@@ -65,8 +65,9 @@ app.get('/ButtonIcons/KINECTAGRAPH_ICON.png', function(req, res) {
 app.get('/ButtonIcons/parabolaButton.jpg', function(req, res) {
     res.sendFile(__dirname + '/ButtonIcons/parabolaButton.jpg');
 });
-app.get('/ButtonIcons/.png', function(req, res) {
-    res.sendFile(__dirname + '/rgrip.png');
+
+app.get('/drawing.html', function(req, res) {
+    res.sendFile(__dirname + '/drawing.html');
 });
 
 kinect.on('bodyFrame', function(bodyFrame){
