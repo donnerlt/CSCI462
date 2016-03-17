@@ -55,7 +55,7 @@ function interpretData(bodyFrame) {
 		user=bodyFrame.bodies[i];
 		
 	}
-	//determines the state of the right hand an sets the painting color based on that
+	//determines the state of the right hand
 	switch (user.rightHandState)
     {
         case 2:
@@ -68,9 +68,10 @@ function interpretData(bodyFrame) {
 			document.getElementById("grab").innerHTML = "Right is closed";
 			right.unshift(rgrip);
 			delete right[1];
-			transdenom++;
+			contraction();
             break;
         case 4:
+			document.getElementById("grab").innerHTML="Translation Mode: Right"
             break;
         case 0:
 			document.getElementById("grab").innerHTML = "I dont know what your doing with your right hand";
@@ -81,7 +82,7 @@ function interpretData(bodyFrame) {
             break;
     }
 	
-	//determines the state of the left hand an sets the painting color based on that
+	//determines the state of the left hand
     switch (user.leftHandState)
     {
         case 2:
@@ -96,10 +97,11 @@ function interpretData(bodyFrame) {
 			
 			left.unshift(lgrip);
 			delete left[1];
-			transnum++;
+			dilation();
 			
             break;
         case 4:
+			document.getElementById("grab1").innerHTML="Translation Mode: Left"
             break;
         case 0:
 			document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand";
@@ -193,8 +195,8 @@ function showAxes(ctx,axes) {
 var canv = document.createElement('canvas');
 canv.id = 'myCanvas';
 //sets canvas height and width based on the size of the window. does this once when the page is loaded.
-canv.width = document.body.clientWidth;
-canv.height = document.body.clientHeight;
+canv.width = document.body.clientWidth-100;
+canv.height = document.body.clientHeight-100;
 document.body.appendChild(canv);
 
 
