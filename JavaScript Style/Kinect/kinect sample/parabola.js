@@ -12,3 +12,15 @@ else{msg = "y = " + transnum/transdenom + "x^2 + " + trans2;
 console.log(msg);}
 return msg;
 }
+
+//scales graph upward
+function dilation(){
+	transnum++;
+	transdenom--;
+}
+
+//scales graph downward
+function contraction(){
+	transdenom++;
+	transnum--;
+}
