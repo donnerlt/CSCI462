@@ -5,9 +5,10 @@
 var socket = io.connect('http://localhost:8000/');
 socket.on('bodyFrame', interpretData);
 var trans = 1;
-var trans2 = 0;
+var vertShift = 0;
 var transnum = 1;
 var transdenom =1;
+var horzShift=1;
 
 var left =[];
 var right =[];
@@ -74,7 +75,7 @@ function interpretData(bodyFrame) {
 			document.getElementById("grab").innerHTML="Translation Mode: Right"
             break;
         case 0:
-			document.getElementById("grab").innerHTML = "I dont know what your doing with your right hand";
+			//document.getElementById("grab").innerHTML = "I dont know what your doing with your right hand";
             break;
         case 1:
             break;
@@ -104,7 +105,7 @@ function interpretData(bodyFrame) {
 			document.getElementById("grab1").innerHTML="Translation Mode: Left"
             break;
         case 0:
-			document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand";
+			//document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand";
             break;
         case 1:
             break;
@@ -135,6 +136,7 @@ function interpretData(bodyFrame) {
 		showAxes(ctx,axes);
 		funGraph(ctx,axes,fun1,"rgb(11,153,11)",1);
 		msg = getFormula();
+		ctx.font="15px Arial"
 		ctx.fillText(msg,10,20);
 
 	

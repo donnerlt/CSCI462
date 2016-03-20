@@ -2,9 +2,6 @@ var Kinect2 = require('kinect2'), express = require('express'), app = express(),
 
 var kinect = new Kinect2();
 
-console.log(process.cwd()+"\\hand.png");
-
-
 if(kinect.open()) {
 server.listen(8000);
 console.log('Server listening on port 8000');
