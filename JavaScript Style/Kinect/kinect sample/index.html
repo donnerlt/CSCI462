@@ -5,7 +5,7 @@
 var socket = io.connect('http://localhost:8000/');
 socket.on('bodyFrame', interpretData);
 var trans = 1;
-var vertShift = 0;
+var vertShift = 1;
 var transnum = 1;
 var transdenom =1;
 var horzShift=1;
@@ -49,7 +49,7 @@ else if(graphType == "ellipse"){
 function interpretData(bodyFrame) {
     // Web Socket message:
 	var user;
-	
+	var transmode = false;
 	// assigns a specific body to be the user
 	for(i=0; i<=7;i++){
 	if (bodyFrame.bodies[i]){
@@ -63,7 +63,6 @@ function interpretData(bodyFrame) {
 			document.getElementById("grab").innerHTML = "Right is open";
 			right.unshift(hand);
 			delete right[1];
-			ctx.fillStyle="Purple";
 			break;
         case 3:
 			document.getElementById("grab").innerHTML = "Right is closed";
@@ -73,6 +72,7 @@ function interpretData(bodyFrame) {
             break;
         case 4:
 			document.getElementById("grab").innerHTML="Translation Mode: Right"
+			
             break;
         case 0:
 			//document.getElementById("grab").innerHTML = "I dont know what your doing with your right hand";
@@ -91,7 +91,7 @@ function interpretData(bodyFrame) {
 			
 			left.unshift(lhand);
 			delete left[1];
-			
+			transmode = false;
             break;
         case 3:
 			document.getElementById("grab1").innerHTML = "left is closed";
@@ -99,13 +99,15 @@ function interpretData(bodyFrame) {
 			left.unshift(lgrip);
 			delete left[1];
 			dilation();
-			
+			transmode=false;
             break;
         case 4:
 			document.getElementById("grab1").innerHTML="Translation Mode: Left"
+			transmode=true;
             break;
         case 0:
 			//document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand";
+			transmode = false;
             break;
         case 1:
             break;
@@ -120,15 +122,26 @@ function interpretData(bodyFrame) {
 	
 	var leftHandPositionX = user.joints[7].depthX;
 	var leftHandPositionY = user.joints[7].depthY;
+	var leftShoulderX = user.joints[4].depthX;
+	var leftShoulderY = user.joints[4].depthY;
 	document.getElementById("dab").innerHTML = rightHandPositionX+"X , "+rightHandPositionY+" Y";
-	document.getElementById("dab1").innerHTML = leftHandPositionX+"X , "+leftHandPositionY+" Y";
+	document.getElementById("dab1").innerHTML = leftHandPositionX+"X , "+leftHandPositionY+" Y | and the shoulder is X " + leftShoulderX +", Y " +leftShoulderY;
 	
 	//draws filled rectangles at the position of the hands
 	//ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,5,5);
-	//ctx.fillRect(rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight,5,5);
+	
+	
+	//this block handles translation
+	while(transmode){
+	console.log("translating...")
+		if(leftHandPositionX< leftShoulderX){translateRight();}
+		if(leftHandPositionX> leftShoulderX){translateLeft();}
+		if(leftHandPositionY< leftShoulderY){translateUp();}
+		if(leftHandPositionY> leftShoulderY){translateDown();}
+		break;
+	}
 	
 	//cleans canvas each frame and redraws hand images
- 
 	ctx.clearRect(0,0,canvasWidth,canvasHeight);
 	if(imageLoaded){
 		ctx.drawImage(left[0], leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight);
@@ -138,6 +151,7 @@ function interpretData(bodyFrame) {
 		msg = getFormula();
 		ctx.font="15px Arial"
 		ctx.fillText(msg,10,20);
+		ctx.fillRect(100, 100, 50, 50);
 
 	
 	}

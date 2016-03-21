@@ -10,7 +10,7 @@ else if (vertShift == 0) {msg = "y = " + transnum/transdenom + "x^2";
 console.log(msg);}
 else{msg = "y = " + transnum/transdenom + "x^2 + " + vertShift;
 console.log(msg);}*/
-msg = "Y = " + transnum + " / " + transdenom + "(X " + horzShift*-1 + ")^2 + " + vertShift ;  
+msg = "Y = " + transnum + " / " + transdenom + "(X +(" + horzShift*-1 + "))^2 + (" + vertShift +")" ;  
 return msg;
 }
 
@@ -28,21 +28,21 @@ function contraction(){
 
 //translates graph up.
 function translateUp(){
-	
+	vertShift+=.5;
 }
 
 
 //translates graph left.
 function translateLeft(){
-	
+	horzShift+=.5;
 }
 
 //translates graph up.
 function translateDown(){
-	
+	vertShift-=.5;
 }
 
 //translates graph up.
 function translateRight(){
-	
+	horzShift-=.5;
 }
