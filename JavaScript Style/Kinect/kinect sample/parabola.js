@@ -16,13 +16,13 @@ return msg;
 
 //scales graph upward
 function dilation(){
-	transnum++;
+	transdenom++;
 	
 }
 
 //scales graph downward
 function contraction(){
-	transdenom++;
+	transnum++;
 	
 }
 

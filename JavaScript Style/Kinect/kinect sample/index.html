@@ -5,10 +5,13 @@
 var socket = io.connect('http://localhost:8000/');
 socket.on('bodyFrame', interpretData);
 var trans = 1;
-var vertShift = 1;
+var vertShift = 0;
 var transnum = 1;
 var transdenom =1;
-var horzShift=1;
+var horzShift=0;
+var oldRight;
+var oldLeft;
+var prevStateUngripped = true;
 
 var left =[];
 var right =[];
@@ -49,12 +52,13 @@ else if(graphType == "ellipse"){
 function interpretData(bodyFrame) {
     // Web Socket message:
 	var user;
+	
 	var transmode = false;
 	// assigns a specific body to be the user
 	for(i=0; i<=7;i++){
 	if (bodyFrame.bodies[i]){
 		user=bodyFrame.bodies[i];
-		
+		userGlobal = user;
 	}
 	//determines the state of the right hand
 	switch (user.rightHandState)
@@ -62,13 +66,15 @@ function interpretData(bodyFrame) {
         case 2:
 			document.getElementById("grab").innerHTML = "Right is open";
 			right.unshift(hand);
+			prevStateUngripped = true;
 			delete right[1];
 			break;
         case 3:
 			document.getElementById("grab").innerHTML = "Right is closed";
 			right.unshift(rgrip);
 			delete right[1];
-			contraction();
+			
+			//contraction();
             break;
         case 4:
 			document.getElementById("grab").innerHTML="Translation Mode: Right"
@@ -91,6 +97,7 @@ function interpretData(bodyFrame) {
 			
 			left.unshift(lhand);
 			delete left[1];
+			prevStateUngripped = true;
 			transmode = false;
             break;
         case 3:
@@ -98,7 +105,8 @@ function interpretData(bodyFrame) {
 			
 			left.unshift(lgrip);
 			delete left[1];
-			dilation();
+			
+			//dilation();
 			transmode=false;
             break;
         case 4:
@@ -130,10 +138,28 @@ function interpretData(bodyFrame) {
 	//draws filled rectangles at the position of the hands
 	//ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,5,5);
 	
-	
+	if(isBothGripped(user)) {
+		//console.log("Both gripped");
+		if(prevStateUngripped){
+			oldRight = user.joints[11].depthX;
+			oldLeft = user.joints[7].depthX;
+		}
+		
+		prevStateUngripped = false;
+		
+		if (isMovingApart(user)) {
+			//console.log("YAY");
+			dilation();
+			}
+		else if(isMovingTogether(user)) {
+			//console.log("WEEE");
+			contraction();
+		}
+		}
+		
 	//this block handles translation
 	while(transmode){
-	console.log("translating...")
+	console.log("translating...");
 		if(leftHandPositionX< leftShoulderX){translateRight();}
 		if(leftHandPositionX> leftShoulderX){translateLeft();}
 		if(leftHandPositionY< leftShoulderY){translateUp();}
@@ -151,7 +177,6 @@ function interpretData(bodyFrame) {
 		msg = getFormula();
 		ctx.font="15px Arial"
 		ctx.fillText(msg,10,20);
-		ctx.fillRect(100, 100, 50, 50);
 
 	
 	}
@@ -164,6 +189,46 @@ function interpretData(bodyFrame) {
 
 }
 
+//check to make sure both hands in gripped state
+//gripped state is state 3
+function isBothGripped(user) {
+	//console.log("in both gripped funct");
+	return (user.leftHandState == 3 && user.rightHandState == 3);
+}
+
+//check to see if hands are moving apart
+function isMovingApart(user) {
+	//console.log("in ismovingapart");
+	var changeL = oldLeft - user.joints[7].depthX;
+	var changeR = oldRight - user.joints[11].depthX;
+	//console.log("r " + changeR);
+	//console.log("l " + changeL);
+	if (changeL > 0 && changeR < 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
+}
+
+//check to see if hands are moving together
+function isMovingTogether(user) {
+//console.log("in ismovingtogether");
+	var changeL = oldLeft - user.joints[7].depthX;
+	var changeR = oldRight - user.joints[11].depthX;
+	//console.log("r " + changeR);
+	//console.log("l " + changeL);
+	if (changeL < 0 && changeR > 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+
+}
+
+ 
 function funGraph (ctx,axes,func,color,thick) {
  var xx, yy, dx=4, x0=axes.x0, y0=axes.y0, scale=axes.scale;
  var iMax = Math.round((ctx.canvas.width-x0)/dx);
