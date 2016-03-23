@@ -9,9 +9,11 @@ var vertShift = 0;
 var transnum = 1;
 var transdenom =1;
 var horzShift=0;
-var oldRight;
-var oldLeft;
+var oldRightX;
+var oldRightY;
+var oldLeftX;
 var prevStateUngripped = true;
+var prevStateUnlasso = true;
 
 var left =[];
 var right =[];
@@ -53,7 +55,6 @@ function interpretData(bodyFrame) {
     // Web Socket message:
 	var user;
 	
-	var transmode = false;
 	// assigns a specific body to be the user
 	for(i=0; i<=7;i++){
 	if (bodyFrame.bodies[i]){
@@ -67,6 +68,7 @@ function interpretData(bodyFrame) {
 			document.getElementById("grab").innerHTML = "Right is open";
 			right.unshift(hand);
 			prevStateUngripped = true;
+			prevStateUnlasso = true;
 			delete right[1];
 			break;
         case 3:
@@ -78,7 +80,7 @@ function interpretData(bodyFrame) {
             break;
         case 4:
 			document.getElementById("grab").innerHTML="Translation Mode: Right"
-			
+			prevStateUnlasso = false
             break;
         case 0:
 			//document.getElementById("grab").innerHTML = "I dont know what your doing with your right hand";
@@ -98,7 +100,6 @@ function interpretData(bodyFrame) {
 			left.unshift(lhand);
 			delete left[1];
 			prevStateUngripped = true;
-			transmode = false;
             break;
         case 3:
 			document.getElementById("grab1").innerHTML = "left is closed";
@@ -107,15 +108,12 @@ function interpretData(bodyFrame) {
 			delete left[1];
 			
 			//dilation();
-			transmode=false;
             break;
         case 4:
 			document.getElementById("grab1").innerHTML="Translation Mode: Left"
-			transmode=true;
             break;
         case 0:
 			//document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand";
-			transmode = false;
             break;
         case 1:
             break;
@@ -141,8 +139,8 @@ function interpretData(bodyFrame) {
 	if(isBothGripped(user)) {
 		//console.log("Both gripped");
 		if(prevStateUngripped){
-			oldRight = user.joints[11].depthX;
-			oldLeft = user.joints[7].depthX;
+			oldRightX = user.joints[11].depthX;
+			oldLeftX = user.joints[7].depthX;
 		}
 		
 		prevStateUngripped = false;
@@ -158,14 +156,23 @@ function interpretData(bodyFrame) {
 		}
 		
 	//this block handles translation
-	while(transmode){
+	if prevStateUnlasso == true && user.rightHandState==4;{
+	oldRightX = user.joints[11].depthX;
+	oldRightY = user.joints[11].depthY;
+	
+	while(user.rightHandState==4){
 	console.log("translating...");
-		if(leftHandPositionX< leftShoulderX){translateRight();}
-		if(leftHandPositionX> leftShoulderX){translateLeft();}
-		if(leftHandPositionY< leftShoulderY){translateUp();}
-		if(leftHandPositionY> leftShoulderY){translateDown();}
+		if(leftHandPositionX< oldRightX){translateRight();}
+		if(leftHandPositionX> oldRightX){translateLeft();}
+		if(leftHandPositionY< oldRightY){translateUp();}
+		if(leftHandPositionY> oldRightY){translateDown();}
 		break;
 	}
+	prevStateUnlasso=false;
+	}
+	
+	
+	
 	
 	//cleans canvas each frame and redraws hand images
 	ctx.clearRect(0,0,canvasWidth,canvasHeight);
@@ -199,8 +206,8 @@ function isBothGripped(user) {
 //check to see if hands are moving apart
 function isMovingApart(user) {
 	//console.log("in ismovingapart");
-	var changeL = oldLeft - user.joints[7].depthX;
-	var changeR = oldRight - user.joints[11].depthX;
+	var changeL = oldLeftX - user.joints[7].depthX;
+	var changeR = oldRightX - user.joints[11].depthX;
 	//console.log("r " + changeR);
 	//console.log("l " + changeL);
 	if (changeL > 0 && changeR < 0) {
@@ -215,8 +222,8 @@ function isMovingApart(user) {
 //check to see if hands are moving together
 function isMovingTogether(user) {
 //console.log("in ismovingtogether");
-	var changeL = oldLeft - user.joints[7].depthX;
-	var changeR = oldRight - user.joints[11].depthX;
+	var changeL = oldLeftX - user.joints[7].depthX;
+	var changeR = oldRightX - user.joints[11].depthX;
 	//console.log("r " + changeR);
 	//console.log("l " + changeL);
 	if (changeL < 0 && changeR > 0) {
