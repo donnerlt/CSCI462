@@ -10,19 +10,19 @@ else if (vertShift == 0) {msg = "y = " + transnum/transdenom + "x^2";
 console.log(msg);}
 else{msg = "y = " + transnum/transdenom + "x^2 + " + vertShift;
 console.log(msg);}*/
-msg = "Y = " + transnum + " / " + transdenom + "(X +(" + horzShift*-1 + "))^2 + (" + vertShift +")" ;  
+msg = "Y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "(X +(" + horzShift*-1 + "))^2 + (" + vertShift +")" ;  
 return msg;
 }
 
 //scales graph upward
 function dilation(){
-	transdenom++;
+	transdenom+= xChange;
 	
 }
 
 //scales graph downward
 function contraction(){
-	transnum++;
+	transnum+= xChange;
 	
 }
 

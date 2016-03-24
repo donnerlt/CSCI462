@@ -13,6 +13,8 @@ var oldRight;
 var oldLeft;
 var prevStateUngripped = true;
 
+var xChange = 0;
+
 var left =[];
 var right =[];
 
@@ -148,11 +150,11 @@ function interpretData(bodyFrame) {
 		prevStateUngripped = false;
 		
 		if (isMovingApart(user)) {
-			//console.log("YAY");
+			console.log("YAY");
 			dilation();
 			}
 		else if(isMovingTogether(user)) {
-			//console.log("WEEE");
+			console.log("WEEE");
 			contraction();
 		}
 		}
@@ -198,9 +200,11 @@ function isBothGripped(user) {
 
 //check to see if hands are moving apart
 function isMovingApart(user) {
-	//console.log("in ismovingapart");
+	console.log("in ismovingapart");
 	var changeL = oldLeft - user.joints[7].depthX;
 	var changeR = oldRight - user.joints[11].depthX;
+	xChange = Math.abs(changeL) + Math.abs(changeR);
+	console.log("change = " + xChange);
 	//console.log("r " + changeR);
 	//console.log("l " + changeL);
 	if (changeL > 0 && changeR < 0) {
