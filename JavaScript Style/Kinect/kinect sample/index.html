@@ -9,9 +9,14 @@ var vertShift = 0;
 var transnum = 1;
 var transdenom =1;
 var horzShift=0;
-var oldRight;
-var oldLeft;
+var oldLeftX;
+var oldLeftY;
+var oldLeftZ;
+var oldRightX;
+var oldRightY;
+var oldRightZ;;
 var prevStateUngripped = true;
+var prevStateOnegripped = true;
 
 var xChange = 0;
 
@@ -69,6 +74,7 @@ function interpretData(bodyFrame) {
 			document.getElementById("grab").innerHTML = "Right is open";
 			right.unshift(hand);
 			prevStateUngripped = true;
+			prevStateOnegripped = true;
 			delete right[1];
 			break;
         case 3:
@@ -100,7 +106,6 @@ function interpretData(bodyFrame) {
 			left.unshift(lhand);
 			delete left[1];
 			prevStateUngripped = true;
-			transmode = false;
             break;
         case 3:
 			document.getElementById("grab1").innerHTML = "left is closed";
@@ -109,11 +114,9 @@ function interpretData(bodyFrame) {
 			delete left[1];
 			
 			//dilation();
-			transmode=false;
             break;
         case 4:
 			document.getElementById("grab1").innerHTML="Translation Mode: Left"
-			transmode=true;
             break;
         case 0:
 			//document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand";
@@ -129,9 +132,12 @@ function interpretData(bodyFrame) {
 	try{
 	var rightHandPositionX = user.joints[11].depthX;
 	var rightHandPositionY = user.joints[11].depthY;
+	var rightHandPositionZ = user.joints[11].cameraZ;
+
 	
 	var leftHandPositionX = user.joints[7].depthX;
 	var leftHandPositionY = user.joints[7].depthY;
+	var leftHandPositionZ = user.joints[7].cameraZ;
 	var leftShoulderX = user.joints[4].depthX;
 	var leftShoulderY = user.joints[4].depthY;
 	document.getElementById("dab").innerHTML = rightHandPositionX+"X , "+rightHandPositionY+" Y";
@@ -150,24 +156,58 @@ function interpretData(bodyFrame) {
 		prevStateUngripped = false;
 		
 		if (isMovingApart(user)) {
-			console.log("YAY");
 			dilation();
 			}
 		else if(isMovingTogether(user)) {
-			console.log("WEEE");
 			contraction();
 		}
 		}
 		
+	if(onlyOneGripped(user)){
+		if(user.rightHandState ==  3){
+			if(prevStateOnegripped){
+				oldRightX = user.joints[11].depthX;
+				oldRightY = user.joints[11].depthY;
+				oldRightZ = user.joints[11].cameraZ;
+				prevStateOnegripped=false;
+			}
+			console.log(Math.abs(rightHandPositionZ-oldRightZ));
+			
+			if(Math.abs(rightHandPositionZ-oldRightZ)>.2){
+				document.getElementById("dab1").innerHTML ="CLICK!";
+				//document.elementFromPoint(rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight).click();
+				//ctx.fillRect(rightHandPositionX*canvasWidth, RightHandPositionY*canvasHeight,5,5);
+		}
+		}
+		else if(user.leftHandState == 3){
+			if(prevStateOnegripped){
+				oldLeftX = user.joints[7].depthX;
+				oldLeftY = user.joints[7].depthY;
+				oldLeftZ = user.joints[7].cameraZ;
+				prevStateOnegripped=false;
+			}
+			
+			console.log(Math.abs(rightHandPositionZ-oldRightZ));
+			
+		if(Math.abs(leftHandPositionZ-oldLeftZ)>.2){
+			document.getElementById("dab1").innerHTML="CLICK!";
+			//document.elementFromPoint(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight).click();
+			//ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,5,5);
+			
+		}
+		}
+		
+	}
+		
 	//this block handles translation
-	while(transmode){
+	/*while(transmode){
 	console.log("translating...");
 		if(leftHandPositionX< leftShoulderX){translateRight();}
 		if(leftHandPositionX> leftShoulderX){translateLeft();}
 		if(leftHandPositionY< leftShoulderY){translateUp();}
 		if(leftHandPositionY> leftShoulderY){translateDown();}
 		break;
-	}
+	}*/
 	
 	//cleans canvas each frame and redraws hand images
 	ctx.clearRect(0,0,canvasWidth,canvasHeight);
@@ -200,11 +240,9 @@ function isBothGripped(user) {
 
 //check to see if hands are moving apart
 function isMovingApart(user) {
-	console.log("in ismovingapart");
 	var changeL = oldLeft - user.joints[7].depthX;
 	var changeR = oldRight - user.joints[11].depthX;
 	xChange = Math.abs(changeL) + Math.abs(changeR);
-	console.log("change = " + xChange);
 	//console.log("r " + changeR);
 	//console.log("l " + changeL);
 	if (changeL > 0 && changeR < 0) {
@@ -230,6 +268,15 @@ function isMovingTogether(user) {
 		return false;
 	}
 
+}
+
+function onlyOneGripped(user){
+	if((user.leftHandState!=3 && user.rightHandState==3)|| (user.leftHandState==3 && user.rightHandState!=3)){
+	return(true);
+	}
+	else{
+	return(false);
+	}
 }
 
  
