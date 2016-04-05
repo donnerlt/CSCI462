@@ -17,6 +17,7 @@ var oldRightY;
 var oldRightZ;;
 var prevStateUngripped = true;
 var prevStateOnegripped = true;
+var prevStateUnlasso = true;
 
 var xChange = 0;
 
@@ -30,6 +31,12 @@ var graphType = getURLParameter("type");
 console.log(graphType);
 
 function typeDetermination(){
+if (graphType == "menu"){
+	console.log("Loading menu...");
+	var loadin = document.createElement("content");
+	loadin.innerHTML='<object type="text/html" data="Menu.html" width = 2000 height = 1200> </object>';
+	document.body.appendChild(loadin);
+}
 if (graphType == "parabola"){
 	console.log("Loading parabola");
 	var loadin = document.createElement("script");
@@ -106,6 +113,7 @@ function interpretData(bodyFrame) {
 			left.unshift(lhand);
 			delete left[1];
 			prevStateUngripped = true;
+			prevStateUnlasso = true;
             break;
         case 3:
 			document.getElementById("grab1").innerHTML = "left is closed";
@@ -119,8 +127,7 @@ function interpretData(bodyFrame) {
 			document.getElementById("grab1").innerHTML="Translation Mode: Left"
             break;
         case 0:
-			//document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand";
-			transmode = false;
+			//document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand"; 
             break;
         case 1:
             break;
@@ -130,6 +137,8 @@ function interpretData(bodyFrame) {
 	
 	//next segment attempts to determine and track the position of the right and left hands and display that in the html body
 	try{
+	var ctx = canvas.getContext("2d");	
+		
 	var rightHandPositionX = user.joints[11].depthX;
 	var rightHandPositionY = user.joints[11].depthY;
 	var rightHandPositionZ = user.joints[11].cameraZ;
@@ -140,6 +149,7 @@ function interpretData(bodyFrame) {
 	var leftHandPositionZ = user.joints[7].cameraZ;
 	var leftShoulderX = user.joints[4].depthX;
 	var leftShoulderY = user.joints[4].depthY;
+	neitherState(user);
 	document.getElementById("dab").innerHTML = rightHandPositionX+"X , "+rightHandPositionY+" Y";
 	document.getElementById("dab1").innerHTML = leftHandPositionX+"X , "+leftHandPositionY+" Y | and the shoulder is X " + leftShoulderX +", Y " +leftShoulderY;
 	
@@ -171,11 +181,10 @@ function interpretData(bodyFrame) {
 				oldRightZ = user.joints[11].cameraZ;
 				prevStateOnegripped=false;
 			}
-			console.log(Math.abs(rightHandPositionZ-oldRightZ));
 			
 			if(Math.abs(rightHandPositionZ-oldRightZ)>.2){
 				document.getElementById("dab1").innerHTML ="CLICK!";
-				//document.elementFromPoint(rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight).click();
+				document.elementFromPoint(rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight).click();
 				//ctx.fillRect(rightHandPositionX*canvasWidth, RightHandPositionY*canvasHeight,5,5);
 		}
 		}
@@ -187,27 +196,55 @@ function interpretData(bodyFrame) {
 				prevStateOnegripped=false;
 			}
 			
-			console.log(Math.abs(rightHandPositionZ-oldRightZ));
 			
 		if(Math.abs(leftHandPositionZ-oldLeftZ)>.2){
 			document.getElementById("dab1").innerHTML="CLICK!";
-			//document.elementFromPoint(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight).click();
+			document.elementFromPoint(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight).click();
 			//ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,5,5);
 			
 		}
 		}
+	}
+	if(isLassoed(user)){
+		if(prevStateUnlasso){
+			if(user.rightHandState ==  4){
+				oldRightX = user.joints[11].depthX;
+				oldRightY = user.joints[11].depthY;
+				
+				
+			}
+			else if(user.leftHandState == 4){
+				oldLeftX = user.joints[7].depthX;
+				oldLeftY = user.joints[7].depthY;
+		}
+		prevStateUnlasso = false;
+		}
+		console.log("right = " + user.joints[11].depthX + " vs " + oldRight);
+		console.log("translating...");
+		
+		if(user.rightHandState == 4){
+			if(user.joints[11].depthX< oldRightX){translateRight();}
+			if(user.joints[11].depthX> oldRightX){translateLeft();}
+			if(user.joints[11].depthY< oldRightY){translateUp();}
+			if(user.joints[11].depthY> oldRightY){translateDown();}
+		}
+		
+		if(user.leftHandState == 4){
+			console.log("left");
+			if(user.joints[7].depthX> oldLeftX){translateRight();}
+			if(user.joints[7].depthX< oldLeftX){translateLeft();}
+			if(user.joints[7].depthYY< oldLeftY){translateUp();}
+			if(user.joints[7].depthY> oldLeftY){translateDown();}
+		}
+		
+		
+		
+	
 		
 	}
 		
 	//this block handles translation
-	/*while(transmode){
-	console.log("translating...");
-		if(leftHandPositionX< leftShoulderX){translateRight();}
-		if(leftHandPositionX> leftShoulderX){translateLeft();}
-		if(leftHandPositionY< leftShoulderY){translateUp();}
-		if(leftHandPositionY> leftShoulderY){translateDown();}
-		break;
-	}*/
+	
 	
 	//cleans canvas each frame and redraws hand images
 	ctx.clearRect(0,0,canvasWidth,canvasHeight);
@@ -236,6 +273,10 @@ function interpretData(bodyFrame) {
 function isBothGripped(user) {
 	//console.log("in both gripped funct");
 	return (user.leftHandState == 3 && user.rightHandState == 3);
+}
+
+function isLassoed(user){
+	return ((user.leftHandState == 4)||(user.rightHandState ==4));
 }
 
 //check to see if hands are moving apart
@@ -268,6 +309,12 @@ function isMovingTogether(user) {
 		return false;
 	}
 
+}
+function neitherState(user){
+	if (user.leftHandState==2 && user.rightHandState==2){
+		prevStateUngripped = true;
+		prevStateUnlasso = true;
+	}
 }
 
 function onlyOneGripped(user){
@@ -323,7 +370,7 @@ function showAxes(ctx,axes) {
 
 <script>
 //creates canvas element and ataches it to the body of the html Document
-
+if (graphType != "menu"){
 var canv = document.createElement('canvas');
 canv.id = 'myCanvas';
 //sets canvas height and width based on the size of the window. does this once when the page is loaded.
@@ -341,7 +388,7 @@ var axes={};
  axes.y0 = .5 + .5*canvas.height; // y0 pixels from top to y=0
  axes.scale = 40;				  // 40 pixels from x=0 to x=1
  axes.doNegativeX = true;
-
+}
 
 
 var imageLoaded = false;
