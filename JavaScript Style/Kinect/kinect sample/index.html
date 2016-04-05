@@ -18,6 +18,10 @@ var oldRightZ;;
 var prevStateUngripped = true;
 var prevStateOnegripped = true;
 var prevStateUnlasso = true;
+var ungrippedColor = "rgb(128,128,128)";
+var grippedColor = "rgb(11,153,11)";
+//var graphColor = "rgb(128,128,128)";
+var graphColor;
 
 var xChange = 0;
 
@@ -158,6 +162,9 @@ function interpretData(bodyFrame) {
 	
 	if(isBothGripped(user)) {
 		//console.log("Both gripped");
+		//color graph green when gripped
+		graphColor = grippedColor;
+		
 		if(prevStateUngripped){
 			oldRight = user.joints[11].depthX;
 			oldLeft = user.joints[7].depthX;
@@ -173,7 +180,10 @@ function interpretData(bodyFrame) {
 		}
 		}
 		
-	if(onlyOneGripped(user)){
+	else if(onlyOneGripped(user)){
+		//color graph grey when only one hand gripped
+		graphColor = ungrippedColor;
+		
 		if(user.rightHandState ==  3){
 			if(prevStateOnegripped){
 				oldRightX = user.joints[11].depthX;
@@ -205,7 +215,7 @@ function interpretData(bodyFrame) {
 		}
 		}
 	}
-	if(isLassoed(user)){
+	else if(isLassoed(user)){
 		if(prevStateUnlasso){
 			if(user.rightHandState ==  4){
 				oldRightX = user.joints[11].depthX;
@@ -236,12 +246,15 @@ function interpretData(bodyFrame) {
 			if(user.joints[7].depthYY< oldLeftY){translateUp();}
 			if(user.joints[7].depthY> oldLeftY){translateDown();}
 		}
-		
+		//color graph green when lassoed
+		graphColor = grippedColor;
 		
 		
 	
 		
 	}
+	//color graph grey when neither hand is gripped
+	else graphColor = ungrippedColor;
 		
 	//this block handles translation
 	
@@ -252,10 +265,10 @@ function interpretData(bodyFrame) {
 		ctx.drawImage(left[0], leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight);
 		ctx.drawImage(right[0], rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight);
 		showAxes(ctx,axes);
-		funGraph(ctx,axes,fun1,"rgb(11,153,11)",1);
+		funGraph(ctx,axes,fun1,graphColor,8);
 		msg = getFormula();
-		ctx.font="15px Arial"
-		ctx.fillText(msg,10,20);
+		ctx.font="25px Arial"
+		ctx.fillText(msg,10,30);
 
 	
 	}
