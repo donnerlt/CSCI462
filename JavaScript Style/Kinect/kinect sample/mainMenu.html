@@ -26,11 +26,18 @@ var context = canvas.getContext('2d');
 var linkText = "/?type=parabola";
 //testing how to page
 var howToLinkText = "howto.html";
+var ellipsetext = "/?type=ellipse";
+var hyperbolaText = "/?type=hyperbola";
+
 //x and y for the event look at bottom left corner of the area not top right
 var linkX = 200;
 var linkY = 150;
 var linkHeight = 50;
 var linkWidth = 100;
+var ellipseX = 200;
+var hyperbolaX = 200;
+var ellipseY = 450;
+var hyperbolaY = 350;
 
 //adding other button info - how to button
 var howToLinkX = 200;
@@ -54,6 +61,8 @@ window.onload = function () {
 	var img3 = document.getElementById("hyperbolaButton");
 	var img4 = document.getElementById("ellipseButton");
 	var img5 = document.getElementById("howToButton");
+	var onEllipse = false;
+	var onHyperbola = false;
 	
 	context.drawImage(logo, 100, 10, 300, 50);
 	
@@ -83,19 +92,50 @@ function on_mousemove (ev) {
   x-=canvas.offsetLeft;
   y-=canvas.offsetTop;
 
-  //is the mouse over the link?
+  //is the mouse over the parabola?
   if(x>=linkX && x <= (linkX + linkWidth) && y<=linkY && y>= (linkY-linkHeight)){
       document.body.style.cursor = "pointer";
       inLink=true;
+      inHowToLink=false;
+      onHyperbola = false;
+      onEllipse = false;
+
   }
+  // is the mouse over the hyperbola?
+if(x>=hyperbolaX && x <= (hyperbolaX + linkWidth) && y<=linkY && y>= (hyperbolaY-linkHeight)){
+      document.body.style.cursor = "pointer";
+      inLink=false;
+      inHowToLink=false;
+      onHyperbola = true;
+      onEllipse = false;
+
+  }
+
+  // is the mouse over the ellipse?
+if(x>=ellipseX && x <= (ellipseX + linkWidth) && y<=linkY && y>= (ellipseY-linkHeight)){
+      document.body.style.cursor = "pointer";
+      inLink=false;
+      inHowToLink=false;
+      onHyperbola = false;
+      onEllipse = true;
+
+  }
+
+
   //is the mouse over the how to link
   else if(x>=howToLinkX && x <= (howToLinkX + linkWidth) && y<=howToLinkY && y>= (howToLinkY-linkHeight)){
 	  inHowToLink=true;
+	  inLink = false
+	  onHyperbola = false;
+	  onEllipse = false;
   }
   else{
       document.body.style.cursor = "";
       inLink=false;
 	  inHowToLink=false;
+	  onHyperbola = false;
+	  onEllipse = false;
+
   }
 }
 
@@ -106,6 +146,12 @@ function on_click(e) {
   }
   else if(inHowToLink) {
 	window.location = howToLinkText;
+  }
+  else if (onEllipse) {
+  	window.location = ellipsetext;
+  }
+  else if (onHyperbola) {
+  	window.location = hyperbolaText;
   }
 }
 
