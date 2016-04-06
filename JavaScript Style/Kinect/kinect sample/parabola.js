@@ -2,16 +2,14 @@ var msg;
 function fun1(x) {return (transnum/transdenom*Math.pow((x-horzShift),2) + vertShift);}
 
 function getFormula(){
-/*if (transnum/transdenom == 1 && vertShift == 0) {msg = "y = x^2";
-console.log(msg);}
-else if (transnum/transdenom == 1) {msg = "y = x^2 + " + vertShift;
-console.log(msg)}
-else if (vertShift == 0) {msg = "y = " + transnum/transdenom + "x^2";
-console.log(msg);}
-else{msg = "y = " + transnum/transdenom + "x^2 + " + vertShift;
-console.log(msg);}*/
-msg = "Y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "(X +(" + horzShift*-1 + "))^2 + (" + vertShift +")" ;  
-return msg;
+	if (transnum/transdenom == 1 && vertShift == 0 && horzShift == 0) {msg = "y = x^2";}
+	else if (transnum/transdenom == 1 && horzShift == 0) {msg = "y = x^2 + " + vertShift;}
+	else if (transdenom == 1 && vertShift == 0 && horzShift == 0) {msg = "y = " + Math.floor(transnum) + "x^2";}
+	else if (vertShift == 0 && horzShift == 0) {msg = "y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "x^2";}
+	else if(horzShift == 0){msg = "y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "x^2 + " + vertShift;}
+	else if(vertShift == 0){msg = "y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "(x +(" + horzShift*-1 + "))^2";}
+	else {msg = "y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "(x +(" + horzShift*-1 + "))^2 + " + vertShift;}
+	console.log(msg);
 }
 
 //scales graph upward
