@@ -9,7 +9,6 @@ function getFormula(){
 	else if(horzShift == 0){msg = "y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "x^2 + " + vertShift;}
 	else if(vertShift == 0){msg = "y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "(x +(" + horzShift*-1 + "))^2";}
 	else {msg = "y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "(x +(" + horzShift*-1 + "))^2 + " + vertShift;}
-	console.log(msg);
 }
 
 //scales graph upward

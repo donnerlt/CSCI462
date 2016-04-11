@@ -23,6 +23,16 @@ app.get('/hand.png', function(req, res) {
     res.sendFile(__dirname + '/hand.png');
 });
 
+app.get('/lassoIcon.png', function(req, res) {
+    res.sendFile(__dirname + '/lassoIcon.png');
+});
+
+
+app.get('/rlassoIcon.png', function(req, res) {
+    res.sendFile(__dirname + '/rlassoIcon.png');
+});
+
+
 app.get('/parabola.js', function(req, res) {
     res.sendFile(__dirname + '/parabola.js');
 });

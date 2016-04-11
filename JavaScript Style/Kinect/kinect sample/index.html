@@ -35,12 +35,6 @@ var graphType = getURLParameter("type");
 console.log(graphType);
 
 function typeDetermination(){
-if (graphType == "menu"){
-	console.log("Loading menu...");
-	var loadin = document.createElement("content");
-	loadin.innerHTML='<object type="text/html" data="Menu.html" width = 2000 height = 1200> </object>';
-	document.body.appendChild(loadin);
-}
 if (graphType == "parabola"){
 	console.log("Loading parabola");
 	var loadin = document.createElement("script");
@@ -97,6 +91,8 @@ function interpretData(bodyFrame) {
             break;
         case 4:
 			document.getElementById("grab").innerHTML="Translation Mode: Right"
+			right.unshift(rlasso);
+			delete right[1];
 			
             break;
         case 0:
@@ -129,6 +125,8 @@ function interpretData(bodyFrame) {
             break;
         case 4:
 			document.getElementById("grab1").innerHTML="Translation Mode: Left"
+			left.unshift(lasso);
+			delete left[1];
             break;
         case 0:
 			//document.getElementById("grab1").innerHTML = "I dont know what your doing with your left hand"; 
@@ -228,10 +226,7 @@ function interpretData(bodyFrame) {
 				oldLeftY = user.joints[7].depthY;
 		}
 		prevStateUnlasso = false;
-		}
-		console.log("right = " + user.joints[11].depthX + " vs " + oldRight);
-		console.log("translating...");
-		
+		}		
 		if(user.rightHandState == 4){
 			if(user.joints[11].depthX< oldRightX){translateRight();}
 			if(user.joints[11].depthX> oldRightX){translateLeft();}
@@ -409,10 +404,16 @@ var hand = new Image();
 var lhand = new Image();
 var rgrip = new Image();
 var lgrip = new Image();
+var lasso = new Image();
+var rlasso = new Image();
+
 hand.src='hand.png';
 lhand.src='lhand.png';
 rgrip.src='rgrip.png';
 lgrip.src='lgrip.png';
+lasso.src='lassoIcon.png';
+rlasso.src='rlassoIcon.png';
+
 
 hand.onload = function(){
 imageLoaded=true;
