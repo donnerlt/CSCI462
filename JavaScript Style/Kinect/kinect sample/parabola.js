@@ -2,7 +2,7 @@ var msg;
 function fun1(x) {return (transnum/transdenom*Math.pow((x-horzShift),2) + vertShift);}
 
 function getFormula(){
-<<<<<<< HEAD
+
 	if (transnum/transdenom == 1 && vertShift == 0 && horzShift == 0) {msg = "y = x^2";}
 	else if (transnum/transdenom == 1 && horzShift == 0) {msg = "y = x^2 + " + vertShift;}
 	else if (transdenom == 1 && vertShift == 0 && horzShift == 0) {msg = "y = " + Math.floor(transnum) + "x^2";}
@@ -10,7 +10,7 @@ function getFormula(){
 	else if(horzShift == 0){msg = "y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "x^2 + " + vertShift;}
 	else if(vertShift == 0){msg = "y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "(x +(" + horzShift*-1 + "))^2";}
 	else {msg = "y = " + Math.floor(transnum) + " / " + Math.floor(transdenom) + "(x +(" + horzShift*-1 + "))^2 + " + vertShift;}
-=======
+
 	//vars for display
 	var msg;
 	var transDisplayStr;
@@ -24,7 +24,7 @@ function getFormula(){
 	//if transDisplay would be transnum/1 just display transnum
 	else if(Math.floor(transdenom)==1) transDisplayStr = Math.floor(transnum);
 	//otherwise, display transnum/transdisplay
-	else transDisplayStr = Math.floor(transnnum) + "/" + Math.floor(transdenom);
+	else transDisplayStr = Math.floor(transnum) + "/" + Math.floor(transdenom);
 
 	//if horzShift is 0 don't display it
 	if (horzShiftForDisplay==0) horzDisplayStr = "x";
@@ -38,11 +38,11 @@ function getFormula(){
 	//make sure - is used instead of +-
 	else if (vertShift < 0) vertDisplayStr = " - " + vertShift*-1;
 	//otherwise display vertShift normally
-	else vertDisplayStr = " + " vertShift;
+	else vertDisplayStr = " + " + vertShift;
 
 	msg = "y = " + transDisplayStr + horzDisplayStr + "^2" + vertDisplayStr;
 	return msg;
->>>>>>> ab6180b463a6adffd03e1b3bee6023b1f6608af0
+
 }
 
 //scales graph upward
