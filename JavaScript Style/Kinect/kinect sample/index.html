@@ -357,6 +357,7 @@ function showAxes(ctx,axes) {
  var y0=axes.y0, h=ctx.canvas.height;
  var xmin = axes.doNegativeX ? 0 : x0;
  ctx.beginPath();
+ ctx.lineWidth = 1;
  ctx.strokeStyle = "rgb(128,128,128)"; 
  ctx.moveTo(xmin,y0); ctx.lineTo(w,y0);	 // X axis
  ctx.moveTo(x0,0);	  ctx.lineTo(x0,h);	 // Y axis
