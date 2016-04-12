@@ -25,6 +25,8 @@ socket.on('bodyFrame', interpretData);
 	var user;	
 	var left =[];
 	var right =[];
+	var leftClicked = false;
+	var rightClicked = false;
 	
 function interpretData(bodyFrame) {
     // Web Socket message:
@@ -147,6 +149,7 @@ function interpretData(bodyFrame) {
 			if(Math.abs(rightHandPositionZ-oldRightZ)>.2){
 				document.elementFromPoint(oldRightX*canvasWidth, oldRightY*canvasHeight).click();
 				console.log(oldRightX*canvasWidth + ", " + oldRightY*canvasWidth);
+				rightClicked = true;
 				//context.fillRect(rightHandPositionX*canvasWidth, RightHandPositionY*canvasHeight,5,5);
 		}
 		}
@@ -163,6 +166,8 @@ function interpretData(bodyFrame) {
 			
 			document.elementFromPoint(oldLeftX*canvasWidth, oldLeftY*canvasHeight).click();
 			console.log(oldLeftX*canvasWidth + ", " + oldLeftY*canvasWidth);
+			//track if left or right hand is clicked
+			leftClicked = true;
 			//context.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,5,5);
 			
 		}
@@ -192,7 +197,7 @@ function interpretData(bodyFrame) {
 		if(user.leftHandState == 4){
 			if(user.joints[7].depthX> oldLeftX){translateRight();}
 			if(user.joints[7].depthX< oldLeftX){translateLeft();}
-			if(user.joints[7].depthYY< oldLeftY){translateUp();}
+			if(user.joints[7].depthY< oldLeftY){translateUp();}
 			if(user.joints[7].depthY> oldLeftY){translateDown();}
 		}
 		//color graph green when lassoed
@@ -314,13 +319,16 @@ var linkText = "/?type=parabola";
 //testing how to page
 var howToLinkText = "howto.html";
 //x and y for the event look at bottom left corner of the area not top right
-var linkX = 200;
+
+//changed from x 200 y 150
+var linkX = canvas.width/4;
 var linkY = 150;
-var linkHeight = 50;
-var linkWidth = 100;
+//changing from height 50 width 100
+var linkHeight = 150;
+var linkWidth = 350;
 
 //adding other button info - how to button
-var howToLinkX = 200;
+var howToLinkX = canvas.width/4;
 var howToLinkY = 550;
 
 
@@ -346,11 +354,11 @@ function drawMenu(){
 	context.drawImage(logo, 100, 10, 300, 50);
 	
 	//image, x and y coords, width, height
-	context.drawImage(img1, 200, 100, 100, 50);
+	context.drawImage(img1, linkX, linkY, linkWidth, linkHeight);
 	context.drawImage(img2, 200, 200, 100, 50);
 	context.drawImage(img3, 200, 300, 100, 50);
 	context.drawImage(img4, 200, 400, 100, 50);
-	context.drawImage(img5, 200, 500, 100, 50);
+	context.drawImage(img5, howToLinkX, howToLinkY, linkWidth, linkHeight);
 	
 	//add mouse listeners for now
 	canvas.addEventListener("mousemove", on_mousemove, false);
@@ -390,12 +398,42 @@ function on_mousemove (ev) {
 
 //if the link has been clicked, go to link
 function on_click(e) {
+	var inLink = false;
+	var inHowToLink = false;
+	console.log("in on_click");
+	console.log("leftclicked: " + leftClicked + " rightClicked: " + rightClicked);
+	var xRight = user.joints[11].depthX * canvas.width;
+	var yRight = user.joints[11].depthY * canvas.height;
+	var xLeft = user.joints[7].depthX * canvas.width;
+	var yLeft = user.joints[7].depthY * canvas.height;
+	
+	//this is for parabola link only 
+	if(leftClicked){
+		if(xLeft >= linkX && xLeft <= (linkX + linkWidth) && yLeft <= linkY && yLeft >= (linkY - linkHeight)) {
+			inLink = true;
+			console.log("inLink: " + inLink);
+		}//for how to link
+		if(xLeft >= howToLinkX && xLeft <= (howToLinkX + linkWidth) && yLeft <= howToLinkY && yLeft >= (howToLinkY - linkHeight)) {
+			inHowToLink = true;
+			//console.log("inLink: " + inLink);
+		}
+	}
+	if(rightClicked){
+		if(xRight >= linkX && xRight <= (linkX + linkWidth) && yRight <= linkY && yRight >= (linkY - linkHeight)) {
+			inLink = true;
+		}//for how to link
+		if(xRight >= howToLinkX && xRight <= (howToLinkX + linkWidth) && yRight <= howToLinkY && yRight >= (howToLinkY - linkHeight)) {
+			inHowToLink = true;
+		}
+	}
   if (inLink)  {
     window.location = linkText;
   }
   else if(inHowToLink) {
 	window.location = howToLinkText;
   }
+  leftClicked = false;
+  rightClicked = false;
 }
 
 //draw();
