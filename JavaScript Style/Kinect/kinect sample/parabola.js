@@ -65,7 +65,7 @@ function translateUp(){
 
 //translates graph left.
 function translateLeft(){
-	horzShift+=.5;
+	horzShift-=.5;
 }
 
 //translates graph up.
@@ -75,5 +75,5 @@ function translateDown(){
 
 //translates graph up.
 function translateRight(){
-	horzShift-=.5;
+	horzShift+=.5;
 }

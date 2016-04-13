@@ -76,21 +76,21 @@ function interpretData(bodyFrame) {
 	switch (user.rightHandState)
     {
         case 2:
-			document.getElementById("grab").innerHTML = "Right is open";
+			//document.getElementById("grab").innerHTML = "Right is open";
 			right.unshift(hand);
 			prevStateUngripped = true;
 			prevStateOnegripped = true;
 			delete right[1];
 			break;
         case 3:
-			document.getElementById("grab").innerHTML = "Right is closed";
+			//document.getElementById("grab").innerHTML = "Right is closed";
 			right.unshift(rgrip);
 			delete right[1];
 			
 			//contraction();
             break;
         case 4:
-			document.getElementById("grab").innerHTML="Translation Mode: Right"
+			//document.getElementById("grab").innerHTML="Translation Mode: Right"
 			right.unshift(rlasso);
 			delete right[1];
 			
@@ -108,7 +108,7 @@ function interpretData(bodyFrame) {
     switch (user.leftHandState)
     {
         case 2:
-			document.getElementById("grab1").innerHTML = "left is open";
+			//document.getElementById("grab1").innerHTML = "left is open";
 			
 			left.unshift(lhand);
 			delete left[1];
@@ -116,7 +116,7 @@ function interpretData(bodyFrame) {
 			prevStateUnlasso = true;
             break;
         case 3:
-			document.getElementById("grab1").innerHTML = "left is closed";
+			//document.getElementById("grab1").innerHTML = "left is closed";
 			
 			left.unshift(lgrip);
 			delete left[1];
@@ -124,7 +124,7 @@ function interpretData(bodyFrame) {
 			//dilation();
             break;
         case 4:
-			document.getElementById("grab1").innerHTML="Translation Mode: Left"
+			//document.getElementById("grab1").innerHTML="Translation Mode: Left"
 			left.unshift(lasso);
 			delete left[1];
             break;
@@ -152,8 +152,8 @@ function interpretData(bodyFrame) {
 	var leftShoulderX = user.joints[4].depthX;
 	var leftShoulderY = user.joints[4].depthY;
 	neitherState(user);
-	document.getElementById("dab").innerHTML = rightHandPositionX+"X , "+rightHandPositionY+" Y";
-	document.getElementById("dab1").innerHTML = leftHandPositionX+"X , "+leftHandPositionY+" Y | and the shoulder is X " + leftShoulderX +", Y " +leftShoulderY;
+	//document.getElementById("dab").innerHTML = rightHandPositionX+"X , "+rightHandPositionY+" Y";
+	//document.getElementById("dab1").innerHTML = leftHandPositionX+"X , "+leftHandPositionY+" Y | and the shoulder is X " + leftShoulderX +", Y " +leftShoulderY;
 	
 	//draws filled rectangles at the position of the hands
 	//ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,5,5);
@@ -182,7 +182,7 @@ function interpretData(bodyFrame) {
 		//color graph grey when only one hand gripped
 		graphColor = ungrippedColor;
 		
-		if(user.rightHandState ==  3){
+		if(user.rightHandState ==  100){
 			if(prevStateOnegripped){
 				oldRightX = user.joints[11].depthX;
 				oldRightY = user.joints[11].depthY;
@@ -191,7 +191,7 @@ function interpretData(bodyFrame) {
 			}
 			
 			if(Math.abs(rightHandPositionZ-oldRightZ)>.2){
-				document.getElementById("dab1").innerHTML ="CLICK!";
+				//document.getElementById("dab1").innerHTML ="CLICK!";
 				document.elementFromPoint(rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight).click();
 				//ctx.fillRect(rightHandPositionX*canvasWidth, RightHandPositionY*canvasHeight,5,5);
 		}
@@ -206,7 +206,7 @@ function interpretData(bodyFrame) {
 			
 			
 		if(Math.abs(leftHandPositionZ-oldLeftZ)>.2){
-			document.getElementById("dab1").innerHTML="CLICK!";
+			//document.getElementById("dab1").innerHTML="CLICK!";
 			document.elementFromPoint(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight).click();
 			//ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,5,5);
 			
@@ -215,31 +215,50 @@ function interpretData(bodyFrame) {
 	}
 	else if(isLassoed(user)){
 		if(prevStateUnlasso){
-			if(user.rightHandState ==  4){
-				oldRightX = user.joints[11].depthX;
-				oldRightY = user.joints[11].depthY;
+			if(user.rightHandState ==  1000){
+				oldRightX = parseFloat(user.joints[11].depthX.toFixed(2));
+				oldRightY = parseFloat(user.joints[11].depthY.toFixed(2));
 				
 				
 			}
 			else if(user.leftHandState == 4){
-				oldLeftX = user.joints[7].depthX;
-				oldLeftY = user.joints[7].depthY;
+				oldLeftX = parseFloat(user.joints[7].depthX.toFixed(2));
+				oldLeftY = parseFloat(user.joints[7].depthY.toFixed(2));
 		}
 		prevStateUnlasso = false;
 		}		
 		if(user.rightHandState == 4){
-			if(user.joints[11].depthX< oldRightX){translateRight();}
-			if(user.joints[11].depthX> oldRightX){translateLeft();}
-			if(user.joints[11].depthY< oldRightY){translateUp();}
-			if(user.joints[11].depthY> oldRightY){translateDown();}
+			if(user.joints[11].depthX> oldRightX+.1){
+				console.log("Right");
+				translateRight();
+			}
+			if(user.joints[11].depthX< oldRightX-.1){
+				translateLeft();
+			console.log("left");}
+			if(user.joints[11].depthY< oldRightY-.1){
+				console.log("Up");
+				translateUp();
+				}
+			if(user.joints[11].depthY>oldRightY+.1){
+				translateDown();
+				console.log("Down");}
 		}
 		
 		if(user.leftHandState == 4){
-			console.log("left");
-			if(user.joints[7].depthX> oldLeftX){translateRight();}
-			if(user.joints[7].depthX< oldLeftX){translateLeft();}
-			if(user.joints[7].depthYY< oldLeftY){translateUp();}
-			if(user.joints[7].depthY> oldLeftY){translateDown();}
+			if(user.joints[7].depthX> oldLeftX+.1){
+				console.log("Right");
+				translateRight();
+			}
+			if(user.joints[7].depthX< oldLeftX-.1){
+				translateLeft();
+			console.log("left");}
+			if(user.joints[7].depthY< oldLeftY-.1){
+				console.log("Up");
+				translateUp();
+				}
+			if(user.joints[7].depthY>oldLeftY+.1){
+				translateDown();
+				console.log("Down");}
 		}
 		//color graph green when lassoed
 		graphColor = grippedColor;
@@ -269,7 +288,10 @@ function interpretData(bodyFrame) {
 	}
 	
 	}
-	catch(exception){
+	catch(e){
+		if (e instanceof TypeError) {}
+		else{
+		console.log(e);}
 	}
 	
 	
@@ -321,7 +343,7 @@ function isMovingTogether(user) {
 function neitherState(user){
 	if (user.leftHandState==2 && user.rightHandState==2){
 		prevStateUngripped = true;
-		prevStateUnlasso = true;
+		//prevStateUnlasso = true;
 	}
 }
 
