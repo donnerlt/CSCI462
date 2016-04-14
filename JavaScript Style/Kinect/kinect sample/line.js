@@ -24,3 +24,24 @@ function contraction(){
 	run++;
 	rise--;
 }
+
+//translates graph up.
+function translateUp(){
+//	x+=.5;
+}
+
+
+//translates graph left.
+function translateLeft(){
+	trans2+=.5;
+}
+
+//translates graph up.
+function translateDown(){
+//	x-=.5;
+}
+
+//translates graph up.
+function translateRight(){
+	trans2-=.5;
+}
