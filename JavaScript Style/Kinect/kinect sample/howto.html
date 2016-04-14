@@ -30,14 +30,18 @@ window.onload = function () {
 	
 	//context.drawImage(headerImg, 162.5, 10, 175, 50);
 	//context.drawImage(img, 200, 500, 100, 50);
+	context.font = "40px Arial Black";
+	context.fillStyle = "purple";
+	context.textAlign = "center";
+	context.fillText("How-To", canvas.width/2, 50);
 	
-	var line1 = "1. Make sure the Kinect is plugged in and that the lights";
-	var line2 = "are on.";
+	var line1 = "1. Make sure the Kinect is plugged in and that the lights are on.";
+	//var line2 = "are on.";
 	var line3 = "2. To push a button, grip with right hand and push toward the Kinect.";
-	var line4 = "3. To translate a graph, use the lasso gesture with your left hand";
+	var line4 = "3. To move a graph, use the lasso (index and middle finger up) gesture with your left hand";
 	var line5 = "and move your hand in the desired direction.";
-	var line6 = "4. To contract or dilate a graph, grip both hands and";
-	var line7 = "move them apart or together.";
+	var line6 = "4. To contract or dilate a graph, grip both hands and move them apart or together.";
+	//var line7 = "move them apart or together.";
 	var line8 = "5. Release the graph when it is in the desired state.";
 	
 	
@@ -46,13 +50,13 @@ window.onload = function () {
 	context.fillStyle = "purple";
 	context.textAlign = "center";
 	context.fillText(line1, canvas.width/2, 150); 
-	context.fillText(line2, canvas.width/2, 175); 
+	//context.fillText(line2, canvas.width/2, 175); 
 	context.fillText(line3, canvas.width/2, 200); 
-	context.fillText(line4, canvas.width/2, 225);
-	context.fillText(line5, canvas.width/2, 250);
-	context.fillText(line6, canvas.width/2, 275);
-	context.fillText(line7, canvas.width/2, 300);
-	context.fillText(line8, canvas.width/2, 325);
+	context.fillText(line4, canvas.width/2, 250);
+	context.fillText(line5, canvas.width/2, 275);
+	context.fillText(line6, canvas.width/2, 325);
+	//context.fillText(line7, canvas.width/2, 300);
+	context.fillText(line8, canvas.width/2, 375);
 	
 	
 	//add mouse listeners for now
