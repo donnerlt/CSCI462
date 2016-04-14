@@ -8,17 +8,16 @@
 
 <body>
 <img id="parabolaButton" width="200" height="100" src="ButtonIcons\parabolaButton.jpg" style="display:none;"/>
-<img id="circleButton" width="200" height="100" src="ButtonIcons\expences-button-png-hi.png" style="display:none;"/>
-<img id="ellipseButton" width="200" height="100" src="ButtonIcons\expences-button-png-hi.png" style="display:none;"/>
-<img id="hyperbolaButton" width="200" height="100" src="ButtonIcons\expences-button-png-hi.png" style="display:none;"/>
-<img id="lineButton" width="200" height="100" src="ButtonIcons\expences-button-png-hi.png" style="display:none;"/>
+<img id="ellipseButton" width="200" height="100" src="ButtonIcons\ellipseButton.jpg" style="display:none;"/>
+<img id="hyperbolaButton" width="200" height="100" src="ButtonIcons\hyperbolaButton.jpg" style="display:none;"/>
+<img id="lineButton" width="200" height="100" src="ButtonIcons\lineButton.jpg" style="display:none;"/>
 <img id="howToButton" width="200" height="100" src="ButtonIcons\howToButton.jpg" style="display:none;"/>
 <img id="kinectagraphIcon" width="200" height="100" src="ButtonIcons\KINECTAGRAPH_ICON.png" style="display:none;"/>
 
 <!-- http://www.purplemath.com/modules/conics.htm for information about equations for conics-->
 <!-- http://pterkildsen.com/2013/06/28/create-a-html5-canvas-element-with-clickable-elements/ -->
 <!-- http://stackoverflow.com/questions/18017260/how-to-add-hyperlink-to-image-in-canvas-element -->
-<canvas id="myCanvas" width=1920 height=1080 style="border:1px solid black"></canvas>
+<canvas id="myCanvas" width=1300 height=625 style="border:1px solid black"></canvas>
 <script>
 var socket = io.connect('http://localhost:8000/');
 socket.on('bodyFrame', interpretData);
@@ -318,28 +317,32 @@ var canvasHeight = canvas.height;
 var linkText = "/?type=parabola";
 //testing how to page
 var howToLinkText = "howto.html";
+var lineText = "/?type=line";
+var hyperbolaText = "/?type=hyperbola"
+var ellipseText = "/?type=ellipse";
 //x and y for the event look at bottom left corner of the area not top right
 
+var buttonHeight = canvas.height/6;
+
 //changed from x 200 y 150
-var linkX = canvas.width/4;
-var linkY = 150;
+var linkX = 0;
+var linkY = buttonHeight;
 //changing from height 50 width 100
-var linkHeight = 150;
-var linkWidth = 350;
+var linkHeight = buttonHeight;
+var linkWidth = canvas.width;
 
 //adding other button info - how to button
-var howToLinkX = canvas.width/4;
-var howToLinkY = 550;
+var howToLinkX = 0;
+var howToLinkY = buttonHeight * 5;
 
+var lineLinkX = 0;
+var lineLinkY = buttonHeight * 2;
 
+var hyperbolaLinkX = 0;
+var hyperbolaLinkY = buttonHeight * 3;
 
-
-//link height and width will always be the same
-
-//var buttons = [];
-
-//for testing
-//var picSrc = "expences-button-png-hi.png";
+var ellipseLinkX = 0;
+var ellipseLinkY = buttonHeight * 4;
 
 function drawMenu(){
 	//var img = new Image();
@@ -351,13 +354,13 @@ function drawMenu(){
 	var img4 = document.getElementById("ellipseButton");
 	var img5 = document.getElementById("howToButton");
 	
-	context.drawImage(logo, 100, 10, 300, 50);
+	context.drawImage(logo, 0, 0, linkWidth, linkHeight);
 	
 	//image, x and y coords, width, height
 	context.drawImage(img1, linkX, linkY, linkWidth, linkHeight);
-	context.drawImage(img2, 200, 200, 100, 50);
-	context.drawImage(img3, 200, 300, 100, 50);
-	context.drawImage(img4, 200, 400, 100, 50);
+	context.drawImage(img2, lineLinkX, lineLinkY, linkWidth, linkHeight);
+	context.drawImage(img3, hyperbolaLinkX, hyperbolaLinkY, linkWidth, linkHeight);
+	context.drawImage(img4, ellipseLinkX, ellipseLinkY, linkWidth, linkHeight);
 	context.drawImage(img5, howToLinkX, howToLinkY, linkWidth, linkHeight);
 	
 	//add mouse listeners for now
@@ -400,6 +403,9 @@ function on_mousemove (ev) {
 function on_click(e) {
 	var inLink = false;
 	var inHowToLink = false;
+	var inLineLink = false;
+	var inHyperbolaLink = false;
+	var inEllipseLink = false;
 	console.log("in on_click");
 	console.log("leftclicked: " + leftClicked + " rightClicked: " + rightClicked);
 	var xRight = user.joints[11].depthX * canvas.width;
@@ -407,23 +413,54 @@ function on_click(e) {
 	var xLeft = user.joints[7].depthX * canvas.width;
 	var yLeft = user.joints[7].depthY * canvas.height;
 	
-	//this is for parabola link only 
+	 
 	if(leftClicked){
+		//parabola link
 		if(xLeft >= linkX && xLeft <= (linkX + linkWidth) && yLeft <= linkY && yLeft >= (linkY - linkHeight)) {
 			inLink = true;
 			console.log("inLink: " + inLink);
-		}//for how to link
+		}
+		//for how to link
 		if(xLeft >= howToLinkX && xLeft <= (howToLinkX + linkWidth) && yLeft <= howToLinkY && yLeft >= (howToLinkY - linkHeight)) {
 			inHowToLink = true;
 			//console.log("inLink: " + inLink);
 		}
+		//line link
+		if(xLeft >= linkLinkX && xLeft <= (lineLinkX + linkWidth) && yLeft <= lineLinkY && yLeft >= (lineLinkY - linkHeight)) {
+			inLineLink = true;
+			//console.log("inLink: " + inLink);
+		}
+		//hyperbola link
+		if(xLeft >= hyperbolaLinkX && xLeft <= (hyperbolaLinkX + linkWidth) && yLeft <= hyperbolaLinkY && yLeft >= (hyperbolaLinkY - linkHeight)) {
+			inHyperbolaLink = true;
+			//console.log("inLink: " + inLink);
+		}
+		//ellipse link
+		if(xLeft >= ellipseLinkX && xLeft <= (ellipseLinkX + linkWidth) && yLeft <= ellipseLinkY && yLeft >= (ellipseLinkY - linkHeight)) {
+			inEllipseLink = true;
+			//console.log("inLink: " + inLink);
+		}
 	}
 	if(rightClicked){
+		//parabola link
 		if(xRight >= linkX && xRight <= (linkX + linkWidth) && yRight <= linkY && yRight >= (linkY - linkHeight)) {
 			inLink = true;
-		}//for how to link
+		}
+		//for how to link
 		if(xRight >= howToLinkX && xRight <= (howToLinkX + linkWidth) && yRight <= howToLinkY && yRight >= (howToLinkY - linkHeight)) {
 			inHowToLink = true;
+		}
+		//line link
+		if(xRight >= lineLinkX && xRight <= (lineLinkX + linkWidth) && yRight <= lineLinkY && yRight >= (lineLinkY - linkHeight)) {
+			inLineLink = true;
+		}
+		//hyperbola link 
+		if(xRight >= hyperbolaLinkX && xRight <= (hyperbolaLinkX + linkWidth) && yRight <= hyperbolaLinkY && yRight >= (hyperbolaLinkY - linkHeight)) {
+			inHyperbolaLink = true;
+		}
+		//ellipse link
+		if(xRight >= ellipseLinkX && xRight <= (ellipseLinkX + linkWidth) && yRight <= ellipseLinkY && yRight >= (ellipseLinkY - linkHeight)) {
+			inEllipseLink = true;
 		}
 	}
   if (inLink)  {
@@ -431,6 +468,15 @@ function on_click(e) {
   }
   else if(inHowToLink) {
 	window.location = howToLinkText;
+  }
+  else if(inLineLink) {
+	window.location = lineText;
+  }
+  else if(inHyperbolaLink) {
+	window.location = hyperbolaText;
+  }
+  else if(inEllipseLink) {
+	window.location = ellipseText;
   }
   leftClicked = false;
   rightClicked = false;

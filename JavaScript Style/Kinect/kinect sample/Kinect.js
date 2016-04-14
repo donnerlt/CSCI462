@@ -65,6 +65,18 @@ app.get('/ButtonIcons/howToButton.jpg', function(req, res) {
     res.sendFile(__dirname + '/ButtonIcons/howToButton.jpg');
 });
 
+app.get('/ButtonIcons/lineButton.jpg', function(req, res) {
+    res.sendFile(__dirname + '/ButtonIcons/lineButton.jpg');
+});
+
+app.get('/ButtonIcons/hyperbolaButton.jpg', function(req, res) {
+    res.sendFile(__dirname + '/ButtonIcons/hyperbolaButton.jpg');
+});
+
+app.get('/ButtonIcons/ellipseButton.jpg', function(req, res) {
+    res.sendFile(__dirname + '/ButtonIcons/ellipseButton.jpg');
+});
+
 app.get('/ButtonIcons/KINECTAGRAPH_ICON.png', function(req, res) {
     res.sendFile(__dirname + '/ButtonIcons/KINECTAGRAPH_ICON.png');
 });
