@@ -37,6 +37,15 @@ app.get('/parabola.js', function(req, res) {
     res.sendFile(__dirname + '/parabola.js');
 });
 
+
+app.get('/hyperbola.js', function(req, res) {
+    res.sendFile(__dirname + '/hyperbola.js');
+});
+
+app.get('/ellipse.js', function(req, res) {
+    res.sendFile(__dirname + '/ellipse.js');
+});
+
 app.get('/line.js', function(req, res) {
     res.sendFile(__dirname + '/line.js');
 });

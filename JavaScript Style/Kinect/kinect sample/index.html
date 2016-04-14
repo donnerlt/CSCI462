@@ -280,6 +280,9 @@ function interpretData(bodyFrame) {
 		ctx.drawImage(right[0], rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight);
 		showAxes(ctx,axes);
 		funGraph(ctx,axes,fun1,graphColor,8);
+		if (graphType == "hyperbola"){
+			funGraph(ctx,axes,fun2,graphColor,8);
+			}
 		msg = getFormula();
 		ctx.font="25px Arial"
 		ctx.fillText(msg,10,30);
@@ -443,7 +446,6 @@ imageLoaded=true;
 left.push(lhand);
 right.push(hand);
 }
-
 </script>
 
 </body>
