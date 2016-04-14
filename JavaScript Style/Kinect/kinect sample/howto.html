@@ -1,9 +1,102 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
+<head>
+<meta charset="UTF-8">
+<title>Kinectagraph How-To</title>
+</head>
+
 <body>
-<H1>How To Menu</H1>
-<p>
-This kinect app allows the users to learn more about the mechanics of polynomial graphs. The user needs to stand in front of the kinect and identify their hands on the screen. From there the users needs to use their open hand and close it on the point of the graph they want to adjust. They then drag their hand and release when they want to. Once hand is released the new graph is shown as well as new information with respect to the newly drawn graph
-</p>
+
+<img id="menuButton" width="200" height="100" src="ButtonIcons\menuButton.png" style="display:none;"/>
+<img id="howToHeader" width="200" height="100" src="ButtonIcons\howToHeader.png" style="display:none;"/>
+
+<canvas id="myCanvas" width=1300 height=625 style="border:1px solid black"></canvas>
+<script>
+var canvas = document.getElementById("myCanvas");
+var context = canvas.getContext('2d');
+//testing the first button
+var linkText = "mainMenu.html";
+
+//x and y for the event look at bottom left corner of the area not top right
+var linkX = 200;
+var linkY = 550;
+var linkHeight = 50;
+var linkWidth = 100;
+
+window.onload = function () {
+	
+	//var img = document.getElementById("menuButton");
+	//var headerImg = document.getElementById("howToHeader");
+	
+	//context.drawImage(headerImg, 162.5, 10, 175, 50);
+	//context.drawImage(img, 200, 500, 100, 50);
+	
+	var line1 = "1. Make sure the Kinect is plugged in and that the lights";
+	var line2 = "are on.";
+	var line3 = "2. To push a button, grip with right hand and push toward the Kinect.";
+	var line4 = "3. To translate a graph, use the lasso gesture with your left hand";
+	var line5 = "and move your hand in the desired direction.";
+	var line6 = "4. To contract or dilate a graph, grip both hands and";
+	var line7 = "move them apart or together.";
+	var line8 = "5. Release the graph when it is in the desired state.";
+	
+	
+	//write the how-to page 
+	context.font = "20px Arial Black";
+	context.fillStyle = "purple";
+	context.textAlign = "center";
+	context.fillText(line1, canvas.width/2, 150); 
+	context.fillText(line2, canvas.width/2, 175); 
+	context.fillText(line3, canvas.width/2, 200); 
+	context.fillText(line4, canvas.width/2, 225);
+	context.fillText(line5, canvas.width/2, 250);
+	context.fillText(line6, canvas.width/2, 275);
+	context.fillText(line7, canvas.width/2, 300);
+	context.fillText(line8, canvas.width/2, 325);
+	
+	
+	//add mouse listeners for now
+	canvas.addEventListener("mousemove", on_mousemove, false);
+	canvas.addEventListener("click", on_click, false);
+	
+}
+
+
+//check if the mouse is over the link and change cursor style
+function on_mousemove (ev) {
+  var x, y;
+
+  // Get the mouse position relative to the canvas element.
+  if (ev.layerX || ev.layerX == 0) { //for firefox
+    x = ev.layerX;
+    y = ev.layerY;
+  }
+  x-=canvas.offsetLeft;
+  y-=canvas.offsetTop;
+
+  //is the mouse over the link?
+  if(x>=linkX && x <= (linkX + linkWidth) && y<=linkY && y>= (linkY-linkHeight)){
+      document.body.style.cursor = "pointer";
+      inLink=true;
+  }
+  else{
+      document.body.style.cursor = "";
+      inLink=false;
+  }
+}
+
+//if the link has been clicked, go to link
+function on_click(e) {
+  if (inLink)  {
+    window.location = linkText;
+  }
+}
+
+//draw();
+
+</script>
+
+
 </body>
-</html>
+
+</html> 
