@@ -4,7 +4,7 @@
 <script>
 var socket = io.connect('http://localhost:8000/');
 socket.on('bodyFrame', interpretData);
-var trans = 1;
+var trans = 0;
 var trans2 = 0;
 var vertShift = 0;
 var transnum = 1;
@@ -23,6 +23,9 @@ var ungrippedColor = "rgb(128,128,128)";
 var grippedColor = "rgb(11,153,11)";
 //var graphColor = "rgb(128,128,128)";
 var graphColor;
+var userGlobal;
+var leftClicked = false;
+var rightClicked = false;
 
 var xChange = 0;
 
@@ -195,6 +198,7 @@ function interpretData(bodyFrame) {
 				//document.getElementById("dab1").innerHTML ="CLICK!";
 				document.elementFromPoint(rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight).click();
 				//ctx.fillRect(rightHandPositionX*canvasWidth, RightHandPositionY*canvasHeight,5,5);
+				rightClicked = true;
 		}
 		}
 		else if(user.leftHandState == 3){
@@ -210,6 +214,7 @@ function interpretData(bodyFrame) {
 			//document.getElementById("dab1").innerHTML="CLICK!";
 			document.elementFromPoint(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight).click();
 			//ctx.fillRect(leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight,5,5);
+			leftClicked = true;
 			
 		}
 		}
@@ -279,16 +284,33 @@ function interpretData(bodyFrame) {
 	if(imageLoaded){
 		ctx.drawImage(left[0], leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight);
 		ctx.drawImage(right[0], rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight);
+		
+		msg = getFormula();
+		ctx.font="25px Arial";
+		ctx.fillText(msg,10,30);
+		
+		//var img1 = document.getElementById("parabolaButton");
+		//context.drawImage(img1, linkX, linkY, linkWidth, linkHeight);
+ 		
+ 		//ctx.font="50px Arial";
+ 		//ctx.fillText = ("BACK", canvas.width/2, canvas.height*11/12);
+		
 		showAxes(ctx,axes);
 		funGraph(ctx,axes,fun1,graphColor,8);
 		if (graphType == "hyperbola"){
 			funGraph(ctx,axes,fun2,graphColor,8);
 			}
 		msg = getFormula();
-		ctx.font="25px Arial"
+		ctx.fillStyle = "purple";
+		ctx.font="25px Arial";
 		ctx.fillText(msg,10,30);
-
-	
+		
+		ctx.fillStyle = "purple";
+		ctx.fillRect(0,canvas.height-100,canvas.width,canvas.height);
+		ctx.font = "bold 50 px Arial";
+		ctx.fillStyle = "white";
+		ctx.fillText("Menu",canvas.width/2 - 30,canvas.height*11/12);
+		
 	}
 	
 	}
@@ -359,7 +381,6 @@ function onlyOneGripped(user){
 	return(false);
 	}
 }
-
  
 function funGraph (ctx,axes,func,color,thick) {
  var xx, yy, dx=4, x0=axes.x0, y0=axes.y0, scale=axes.scale;
@@ -402,7 +423,7 @@ function showAxes(ctx,axes) {
 <style type="text/css">
       canvas { border: 1px solid black; }
     </style>
-
+<img id="parabolaButton" width="200" height="100" src="ButtonIcons\parabolaButton.jpg" style="display:none;"/>
 <script>
 //creates canvas element and ataches it to the body of the html Document
 if (graphType != "menu"){
@@ -410,9 +431,43 @@ var canv = document.createElement('canvas');
 canv.id = 'myCanvas';
 //sets canvas height and width based on the size of the window. does this once when the page is loaded.
 canv.width = document.body.clientWidth-100;
-canv.height = document.body.clientHeight-100;
+canv.height = document.body.clientHeight-10;
 document.body.appendChild(canv);
 
+//used to click menu button from graph
+function on_click(e) {
+	var inMenuLink = false;
+	var user = userGlobal;
+	var xRight = user.joints[11].depthX * canvas.width;
+	var yRight = user.joints[11].depthY * canvas.height;
+	var xLeft = user.joints[7].depthX * canvas.width;
+	var yLeft = user.joints[7].depthY * canvas.height;
+	
+	var menuLinkX = 0;
+	var menuLinkY = canvas.height - 100;
+	var linkWidth = canvas.width;
+	var linkHeight = 100;
+	
+	if(leftClicked){
+		//parabola link
+		if(xLeft >= menuLinkX && xLeft <= (menuLinkX + linkWidth) && yLeft <= menuLinkY && yLeft >= (menuLinkY - linkHeight)) {
+			inMenuLink = true;
+		}	
+	}
+	if(rightClicked){
+		//parabola link
+		if(xRight >= menuLinkX && xRight <= (menuLinkX + linkWidth) && yRight <= menuLinkY && yRight >= (menuLinkY - linkHeight)) {
+			inMenuLink = true;
+		}
+	}
+  if (inMenuLink)  {
+    window.location = "/menu.html";
+  }
+  leftClicked = false;
+  rightClicked = false;
+}
+
+canv.addEventListener("click", on_click, false);
 
 var canvas = document.getElementById('myCanvas');
 var canvasWidth = canvas.width;

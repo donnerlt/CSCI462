@@ -19,6 +19,12 @@
 <!-- http://stackoverflow.com/questions/18017260/how-to-add-hyperlink-to-image-in-canvas-element -->
 <canvas id="myCanvas" width=1300 height=625 style="border:1px solid black"></canvas>
 <script>
+//changing canvas dimensions to match how graph canvas works
+var canvas = getElementById('myCanvas');
+canvas.width = document.body.clientWidth-100;
+canvas.height = document.body.clientHeight-100;
+</script>
+<script>
 var socket = io.connect('http://localhost:8000/');
 socket.on('bodyFrame', interpretData);
 	var user;	
@@ -426,7 +432,7 @@ function on_click(e) {
 			//console.log("inLink: " + inLink);
 		}
 		//line link
-		if(xLeft >= linkLinkX && xLeft <= (lineLinkX + linkWidth) && yLeft <= lineLinkY && yLeft >= (lineLinkY - linkHeight)) {
+		if(xLeft >= lineLinkX && xLeft <= (lineLinkX + linkWidth) && yLeft <= lineLinkY && yLeft >= (lineLinkY - linkHeight)) {
 			inLineLink = true;
 			//console.log("inLink: " + inLink);
 		}

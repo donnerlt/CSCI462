@@ -1,13 +1,13 @@
 var message;
 var rise=1;
 var run=1;
-function fun1(x) {return (((rise/run*x) + trans2));}
+function fun1(x) {return (((rise/run*x + trans) + trans2));}
 
 function getFormula(){
-	if (rise == 1 && run == 1 && trans2 == 0) msg = "y = x";
-	else if (run == 1 && trans2 == 0) msg = "y = " + rise + "x";
-	else if (trans2 == 0) msg = "y = " + rise + "/" + run + "x";
-	else msg = "y = " + rise + "/" + run + "x + " + trans2;
+	if (rise == 1 && run == 1 && trans2 == 0 && trans == 0) msg = "y = x";
+	else if (run == 1 && trans2 == 0) msg = "y = " + rise.toFixed(2) + "x + " + trans;
+	else if (trans2 == 0) msg = "y = " + rise.toFixed(2) + "/" + run.toFixed(2) + "x + " + trans;
+	else msg = "y = (" + rise.toFixed(2) + "/" + run.toFixed(2) + "x + " + trans + ") + " + trans2;
 	//msg = "y = " + trans+"*"+ x +"+"+ trans2;
 	console.log(msg);
 	return msg;
@@ -15,19 +15,19 @@ function getFormula(){
 
 //scales graph upward
 function dilation(){
-	rise++;
-	run--;
+	rise+= xChange;
+	run-= xChange;
 }
 
 //scales graph downward
 function contraction(){
-	run++;
-	rise--;
+	run+= xChange;
+	rise-= xChange;
 }
 
 //translates graph up.
 function translateUp(){
-//	x+=.5;
+	trans+=.5;
 }
 
 
@@ -38,7 +38,7 @@ function translateLeft(){
 
 //translates graph up.
 function translateDown(){
-//	x-=.5;
+	trans-=.5;
 }
 
 //translates graph up.
