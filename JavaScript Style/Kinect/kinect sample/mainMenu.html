@@ -328,7 +328,7 @@ var hyperbolaText = "/?type=hyperbola"
 var ellipseText = "/?type=ellipse";
 //x and y for the event look at bottom left corner of the area not top right
 
-var buttonHeight = canvas.height/6;
+var buttonHeight = canvas.height/5;
 
 //changed from x 200 y 150
 var linkX = 0;
@@ -339,7 +339,7 @@ var linkWidth = canvas.width;
 
 //adding other button info - how to button
 var howToLinkX = 0;
-var howToLinkY = buttonHeight * 5;
+var howToLinkY = buttonHeight * 4;
 
 var lineLinkX = 0;
 var lineLinkY = buttonHeight * 2;
@@ -347,8 +347,8 @@ var lineLinkY = buttonHeight * 2;
 var hyperbolaLinkX = 0;
 var hyperbolaLinkY = buttonHeight * 3;
 
-var ellipseLinkX = 0;
-var ellipseLinkY = buttonHeight * 4;
+//var ellipseLinkX = 0;
+//var ellipseLinkY = buttonHeight * 4;
 
 function drawMenu(){
 	//var img = new Image();
@@ -357,7 +357,7 @@ function drawMenu(){
 	var img1 = document.getElementById("parabolaButton");
 	var img2 = document.getElementById("lineButton");
 	var img3 = document.getElementById("hyperbolaButton");
-	var img4 = document.getElementById("ellipseButton");
+	//var img4 = document.getElementById("ellipseButton");
 	var img5 = document.getElementById("howToButton");
 	
 	context.drawImage(logo, 0, 0, linkWidth, linkHeight);
@@ -366,7 +366,7 @@ function drawMenu(){
 	context.drawImage(img1, linkX, linkY, linkWidth, linkHeight);
 	context.drawImage(img2, lineLinkX, lineLinkY, linkWidth, linkHeight);
 	context.drawImage(img3, hyperbolaLinkX, hyperbolaLinkY, linkWidth, linkHeight);
-	context.drawImage(img4, ellipseLinkX, ellipseLinkY, linkWidth, linkHeight);
+	//context.drawImage(img4, ellipseLinkX, ellipseLinkY, linkWidth, linkHeight);
 	context.drawImage(img5, howToLinkX, howToLinkY, linkWidth, linkHeight);
 	
 	//add mouse listeners for now
@@ -412,8 +412,8 @@ function on_click(e) {
 	var inLineLink = false;
 	var inHyperbolaLink = false;
 	var inEllipseLink = false;
-	console.log("in on_click");
-	console.log("leftclicked: " + leftClicked + " rightClicked: " + rightClicked);
+	//console.log("in on_click");
+	//console.log("leftclicked: " + leftClicked + " rightClicked: " + rightClicked);
 	var xRight = user.joints[11].depthX * canvas.width;
 	var yRight = user.joints[11].depthY * canvas.height;
 	var xLeft = user.joints[7].depthX * canvas.width;
@@ -442,10 +442,10 @@ function on_click(e) {
 			//console.log("inLink: " + inLink);
 		}
 		//ellipse link
-		if(xLeft >= ellipseLinkX && xLeft <= (ellipseLinkX + linkWidth) && yLeft <= ellipseLinkY && yLeft >= (ellipseLinkY - linkHeight)) {
-			inEllipseLink = true;
+		//if(xLeft >= ellipseLinkX && xLeft <= (ellipseLinkX + linkWidth) && yLeft <= ellipseLinkY && yLeft >= (ellipseLinkY - linkHeight)) {
+		//	inEllipseLink = true;
 			//console.log("inLink: " + inLink);
-		}
+		//}
 	}
 	if(rightClicked){
 		//parabola link
@@ -465,9 +465,9 @@ function on_click(e) {
 			inHyperbolaLink = true;
 		}
 		//ellipse link
-		if(xRight >= ellipseLinkX && xRight <= (ellipseLinkX + linkWidth) && yRight <= ellipseLinkY && yRight >= (ellipseLinkY - linkHeight)) {
-			inEllipseLink = true;
-		}
+		//if(xRight >= ellipseLinkX && xRight <= (ellipseLinkX + linkWidth) && yRight <= ellipseLinkY && yRight >= (ellipseLinkY - linkHeight)) {
+		//	inEllipseLink = true;
+		//}
 	}
   if (inLink)  {
     window.location = linkText;
