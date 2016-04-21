@@ -450,13 +450,19 @@ function on_click(e) {
 	
 	if(leftClicked){
 		//parabola link
-		if(xLeft >= menuLinkX && xLeft <= (menuLinkX + linkWidth) && yLeft <= menuLinkY && yLeft >= (menuLinkY - linkHeight)) {
+		//if(xLeft >= menuLinkX && xLeft <= (menuLinkX + linkWidth) && yLeft <= menuLinkY && yLeft >= (menuLinkY - linkHeight)) {
+			//inMenuLink = true;
+		//}
+		if(xLeft >= menuLinkX && xLeft <= (menuLinkX + linkWidth) && yLeft >= menuLinkY && yLeft <= canvas.height) {
 			inMenuLink = true;
-		}	
+		}
 	}
 	if(rightClicked){
 		//parabola link
-		if(xRight >= menuLinkX && xRight <= (menuLinkX + linkWidth) && yRight <= menuLinkY && yRight >= (menuLinkY - linkHeight)) {
+		//if(xRight >= menuLinkX && xRight <= (menuLinkX + linkWidth) && yRight <= menuLinkY && yRight >= (menuLinkY - linkHeight)) {
+			//inMenuLink = true;
+		//}
+		if(xRight >= menuLinkX && xRight <= (menuLinkX + linkWidth) && yRight >= menuLinkY && yRight <= canvas.height) {
 			inMenuLink = true;
 		}
 	}
@@ -475,7 +481,7 @@ var canvasHeight = canvas.height;
 var ctx = canvas.getContext("2d");
 var axes={};
  axes.x0 = .5 + .5*canvas.width;  // x0 pixels from left to x=0
- axes.y0 = .5 + .5*canvas.height; // y0 pixels from top to y=0
+ axes.y0 = .5 + .5*(canvas.height-100); // accounts for button @ bottom
  axes.scale = 40;				  // 40 pixels from x=0 to x=1
  axes.doNegativeX = true;
 }
