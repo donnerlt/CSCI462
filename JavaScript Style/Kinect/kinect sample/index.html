@@ -282,8 +282,7 @@ function interpretData(bodyFrame) {
 	//cleans canvas each frame and redraws hand images
 	ctx.clearRect(0,0,canvasWidth,canvasHeight);
 	if(imageLoaded){
-		ctx.drawImage(left[0], leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight);
-		ctx.drawImage(right[0], rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight);
+		
 		
 		msg = getFormula();
 		ctx.font="25px Arial";
@@ -310,6 +309,9 @@ function interpretData(bodyFrame) {
 		ctx.font = "bold 50 px Arial";
 		ctx.fillStyle = "white";
 		ctx.fillText("Menu",canvas.width/2 - 30,canvas.height*11/12);
+		
+		ctx.drawImage(left[0], leftHandPositionX*canvasWidth, leftHandPositionY*canvasHeight);
+		ctx.drawImage(right[0], rightHandPositionX*canvasWidth, rightHandPositionY*canvasHeight);
 		
 	}
 	
@@ -453,7 +455,7 @@ function on_click(e) {
 		//if(xLeft >= menuLinkX && xLeft <= (menuLinkX + linkWidth) && yLeft <= menuLinkY && yLeft >= (menuLinkY - linkHeight)) {
 			//inMenuLink = true;
 		//}
-		if(xLeft >= menuLinkX && xLeft <= (menuLinkX + linkWidth) && yLeft >= menuLinkY && yLeft <= canvas.height) {
+		if(xLeft >= menuLinkX && xLeft <= (menuLinkX + linkWidth) && yLeft >= menuLinkY) {
 			inMenuLink = true;
 		}
 	}
@@ -462,7 +464,7 @@ function on_click(e) {
 		//if(xRight >= menuLinkX && xRight <= (menuLinkX + linkWidth) && yRight <= menuLinkY && yRight >= (menuLinkY - linkHeight)) {
 			//inMenuLink = true;
 		//}
-		if(xRight >= menuLinkX && xRight <= (menuLinkX + linkWidth) && yRight >= menuLinkY && yRight <= canvas.height) {
+		if(xRight >= menuLinkX && xRight <= (menuLinkX + linkWidth) && yRight >= menuLinkY) {
 			inMenuLink = true;
 		}
 	}
