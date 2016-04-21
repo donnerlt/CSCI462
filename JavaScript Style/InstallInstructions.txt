@@ -1,6 +1,6 @@
 How To Install and Use KINECTAGRAPH
 
-Please note, the Kinect V2 SDK can only be downloaded and installed on Windows 8.1 or higher.
+Please note, the Kinect V2 SDK can only be downloaded and installed on Windows 8 or higher.
 
 1. Install Node.js: https://nodejs.org/en/download/
 2. Install the Kinect SDK: https://www.microsoft.com/en-us/download/details.aspx?id=44561
