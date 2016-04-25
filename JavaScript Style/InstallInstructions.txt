@@ -5,7 +5,7 @@ Please note, the Kinect V2 SDK can only be downloaded and installed on Windows 8
 1. Install Node.js: https://nodejs.org/en/download/
 2. Install the Kinect SDK: https://www.microsoft.com/en-us/download/details.aspx?id=44561
 3. Clone GitHub repository: git clone https://github.com/donnerlt/CSCI462.git <location>
-4. Install by double-clicking the install file in the \CSCI462\JavaScript Style\Kinect\kinect sample directory
-5. With the Kinect V2 plugged into a USB 3.0 port, double-click the Run Kinectagraph file in the \CSCI462\JavaScript Style\Kinect\kinect sample directory
-6. Going forward, use the Kinectagraph by double-clicking Run Kinectagraph with the Kinect plugged in
-
+4. Install the Kinect SDK from https://www.microsoft.com/en-us/download/details.aspx?id=44561
+5. Install by double-clicking the install file in the \CSCI462\JavaScript Style\Kinect\kinect sample directory
+6. With the Kinect V2 plugged into a USB 3.0 port, double-click the Run Kinectagraph file in the \CSCI462\JavaScript Style\Kinect\kinect sample directory
+7. Going forward, use the Kinectagraph by double-clicking Run Kinectagraph with the Kinect plugged in
